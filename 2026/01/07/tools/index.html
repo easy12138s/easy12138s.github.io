@@ -7,18 +7,23 @@
 <meta name="full-screen" content="yes">
 <meta name="theme-color" content="#317EFB" />
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" name="viewport">
-<meta name="description" content="easy-box">
-<meta property="og:type" content="website">
-<meta property="og:title" content="easy-box">
-<meta property="og:url" content="http://example.com/tags/AI-Agent/index.html">
+<meta name="description" content="在系列上一篇文章中，我们聊到了 AI Agent 的核心定义与应用价值。如果说 Agent 是为大模型装上了“手脚”，那么**提示词（Prompt）**就是驱动这双手脚执行任务的“神经中枢”。 很多人把提示词称作“咒语”，仿佛靠几句玄学话术拼接就能让 AI 心领神会。但在 Agent 的工程化构建中，玄学是行不通的。所有“Agent 不听话”、“执行跑偏”的问题，本质上往往是提示词缺乏结构化设计的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）">
+<meta property="og:url" content="http://example.com/2026/01/07/tools/index.html">
 <meta property="og:site_name" content="easy-box">
-<meta property="og:description" content="easy-box">
+<meta property="og:description" content="在系列上一篇文章中，我们聊到了 AI Agent 的核心定义与应用价值。如果说 Agent 是为大模型装上了“手脚”，那么**提示词（Prompt）**就是驱动这双手脚执行任务的“神经中枢”。 很多人把提示词称作“咒语”，仿佛靠几句玄学话术拼接就能让 AI 心领神会。但在 Agent 的工程化构建中，玄学是行不通的。所有“Agent 不听话”、“执行跑偏”的问题，本质上往往是提示词缺乏结构化设计的">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-07T09:21:24.000Z">
+<meta property="article:modified_time" content="2026-01-07T09:57:03.052Z">
 <meta property="article:author" content="easy">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="AI Agent">
+<meta property="article:tag" content="技术分享">
 <meta name="twitter:card" content="summary">
 
 
-<title >easy-box</title>
+<title >告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）</title>
 
 <!-- Favicon -->
 
@@ -59,7 +64,7 @@
 
 <!-- Variable -->
 <script>window.ASYNC_CONFIG = {"hostname":"example.com","author":"easy","root":"/","typed_text":null,"theme_version":"2.2.7","theme":{"switch":true,"default":"auto","animation":true},"favicon":{"logo":"/img/编程兔子_compressed.png","icon16":"/img/编程兔子_compressed.png","icon32":"/img/编程兔子_compressed.png","apple_touch_icon":null,"webmanifest":"/site.webmanifest","visibilitychange":true,"hidden":"failure.ico","show_text":"(/≧▽≦/)咦！又好了！","hide_text":"(●—●)喔哟，崩溃啦！"},"i18n":{"placeholder":"搜索文章...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）","author":"本文作者：","copyright_link":"本文链接：","copyright_license_title":"版权声明：","copyright_license_content":"本博客所有文章除特别声明外，均默认采用 undefined 许可协议。","copy_success":"复制成功","copy_failure":"复制失败","open_read_mode":"进入阅读模式","exit_read_mode":"退出阅读模式","notice_outdate_message":"距离上次更新已经 undefined 天了, 文章内容可能已经过时。","sticky":"置顶","just":"刚刚","min":"分钟前","hour":"小时前","day":"天前","month":"个月前"},"swup":false,"plugin":{"flickr_justified_gallery":"https://unpkg.com/flickr-justified-gallery@latest/dist/fjGallery.min.js"},"icons":{"sun":"far fa-sun","moon":"far fa-moon","play":"fas fa-play","email":"far fa-envelope","next":"fas fa-arrow-right","calendar":"far fa-calendar-alt","clock":"far fa-clock","user":"far fa-user","back_top":"fas fa-arrow-up","close":"fas fa-times","search":"fas fa-search","reward":"fas fa-hand-holding-usd","toc_tag":"fas fa-th-list","read":"fas fa-book-reader","arrows":"fas fa-arrows-alt-h","double_arrows":"fas fa-angle-double-down","copy":"fas fa-copy"},"icontype":"font","highlight":{"plugin":"highlighjs","theme":true,"copy":true,"lang":true,"title":"default","height_limit":false},"toc":{"post_title":true},"live_time":{"start_time":"","prefix":"博客已萌萌哒运行 undefined 天"},"danmu":{"enable":false,"el":".trm-banner"},"creative_commons":{"license":"by-nc-sa","language":"deed.zh-hans"},"search":{"enable":true,"type":"local","href":"https://www.google.com/search?q=site:","domain":null}};</script>
-<script id="async-page-config">window.PAGE_CONFIG = {"isPost":false,"isHome":false,"postUpdate":"2026-01-07 17:57:16"};</script>
+<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2026-01-07 17:57:03"};</script>
 
 <!-- Theme mode css -->
 <link data-swup-theme rel="stylesheet" href="/css/index.css?v=2.2.7" id="trm-switch-style">
@@ -190,7 +195,6 @@
 
             <!-- body -->
             
-
 <div class="trm-content-start">
     <!-- banner -->
     <div class="trm-banner">
@@ -212,10 +216,10 @@
                     <!-- banner title -->
                     <div class="trm-banner-text ">
                         <div class="trm-label trm-mb-20">
-                            The article archive
+                            NEWS LETTER
                         </div>
                         <h1 class="trm-mb-30 trm-hsmb-font">
-                            云间连下榻，<br>天上接行杯。
+                            告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）
                         </h1>
 
                         
@@ -225,7 +229,7 @@
                                 </li>
                                 <li>
                                     <span>
-                                        tags
+                                        2026
                                     </span>
                                 </li>
                             </ul>
@@ -311,125 +315,121 @@
             
             <div class="trm-page-content col-lg-8">
                 <div id="trm-content" class="trm-content">
-                    <div class="row">
-    <div class="col-lg-12">
-        <div class="trm-card">
-            <div style="padding: 0 20px;">
-                
-                    <ul class="trm-tag-list" itemprop="keywords"><li class="trm-tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">3</span></li><li class="trm-tag-list-item"><a class="tag-list-link" href="/tags/AI-Agent/" rel="tag">AI Agent</a><span class="tag-list-count">3</span></li><li class="trm-tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/" rel="tag">技术分享</a><span class="tag-list-count">3</span></li></ul>
-                
-            </div>
+                    <div class="trm-post-info row hidden-sm">
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-calendar-alt trm-icon"></i><br>
+            01/07
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-clock trm-icon"></i><br>
+            17:21
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div id="post-author" class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-user trm-icon"></i><br>
+            easy
         </div>
     </div>
 </div>
+<div class="trm-card ">
+    <article id="article-container" class="trm-publication">
+    <p>在<a href="easy.md">系列上一篇文章</a>中，我们聊到了 AI Agent 的核心定义与应用价值。如果说 Agent 是为大模型装上了“手脚”，那么**提示词（Prompt）**就是驱动这双手脚执行任务的“神经中枢”。</p>
+<p>很多人把提示词称作“咒语”，仿佛靠几句玄学话术拼接就能让 AI 心领神会。但在 Agent 的工程化构建中，玄学是行不通的。所有“Agent 不听话”、“执行跑偏”的问题，本质上往往是提示词缺乏结构化设计的结果。</p>
+<p>今天我们以我的开源项目 <a target="_blank" rel="noopener" href="https://github.com/easy12138s/cool-agent">Cool Agent</a> 为例，拆解一套适配 Agent 场景的提示词工程化思维。</p>
+<h2 id="1-结构化提示词：Agent-的“任务说明书”"><a href="#1-结构化提示词：Agent-的“任务说明书”" class="headerlink" title="1. 结构化提示词：Agent 的“任务说明书”"></a>1. 结构化提示词：Agent 的“任务说明书”</h2><p>早期的提示词更像零散的自然语言随笔，而在 Agent 开发视角下，优秀的提示词应该是一段<strong>可复用、可调试的任务说明书</strong>。</p>
+<p>目前最主流的结构化范式是 <strong>Role-Context-Task-Constraint-Output</strong>。我们可以把它想象成给 Agent 设定的“行动框架”。以 Cool Agent 的“智能文件重命名”功能为例：</p>
+<ul>
+<li><strong>Role (角色)</strong>：定义身份边界。<ul>
+<li><em>示例</em>：“你是一个专业的文件管理助手，擅长通过阅读文档内容提炼核心主题，并根据规则生成标准化的文件名。”</li>
+</ul>
+</li>
+<li><strong>Context (上下文)</strong>：补充背景信息。<ul>
+<li><em>示例</em>：“用户上传了一份扫描件的 OCR 文本，内容可能包含合同、会议记录或技术方案。你需要帮用户解决文件命名混乱的问题。”</li>
+</ul>
+</li>
+<li><strong>Task (任务)</strong>：明确核心目标。<ul>
+<li><em>示例</em>：“阅读文本，提取出文件类型、关键主体和日期，生成一个简洁的文件名。”</li>
+</ul>
+</li>
+<li><strong>Constraint (约束)</strong>：划定禁区，这是避免 Agent “乱操作”的关键。<ul>
+<li><em>示例</em>：“文件名不得包含特殊字符；必须以 YYYY-MM-DD 开头；严禁在输出中包含任何解释性文字，只输出最终的文件名。”</li>
+</ul>
+</li>
+<li><strong>Output (输出格式)</strong>：指定结果形式。<ul>
+<li><em>示例</em>：“输出格式为纯文本字符串，例如：2026-01-07_字节跳动_合作协议.pdf”。</li>
+</ul>
+</li>
+</ul>
+<p><strong>实战 Tip</strong>：在编写时，建议使用 Markdown 的标题（#）或列表来分隔这些模块。AI 对结构化文本的解析效率远高于大段文字。</p>
+<h2 id="2-进阶：让-Agent-精准推理的思维链-CoT"><a href="#2-进阶：让-Agent-精准推理的思维链-CoT" class="headerlink" title="2. 进阶：让 Agent 精准推理的思维链 (CoT)"></a>2. 进阶：让 Agent 精准推理的思维链 (CoT)</h2><p>在处理复杂逻辑时（比如判断文件的重要性或分类），即使指令清晰，Agent 也可能出现逻辑跳跃。这时就需要引入 <strong>Chain of Thought (CoT)</strong>。</p>
+<p>核心逻辑很简单：在指令中明确要求 Agent <strong>“输出你的思考过程”</strong>。</p>
+<p>在 Cool Agent 中，我们不会让它直接分类，而是引导它：</p>
+<blockquote>
+<p>“在给出分类结果前，请先 analysis 该文档的核心关键词，并对比现有的分类标准。将你的思考过程记录在 <code>&lt;thought&gt;</code> 标签内。”</p>
+</blockquote>
+<p>这种做法强迫模型在生成最终答案前进行推理，能显著降低“幻觉”和逻辑错误的概率。</p>
+<h2 id="3-运行范式：ReAct（推理-行动）"><a href="#3-运行范式：ReAct（推理-行动）" class="headerlink" title="3. 运行范式：ReAct（推理 + 行动）"></a>3. 运行范式：ReAct（推理 + 行动）</h2><p>我们在上一篇提到，Agent 的核心优势是“自主调用工具”。支撑这一优势的底层范式正是 <strong>ReAct (Reason + Act)</strong>。</p>
+<p>当 Cool Agent 发现自己无法直接处理某个文件时（比如是一个加密压缩包），它的 ReAct 循环会这样运行：</p>
+<ol>
+<li><strong>Thought (思考)</strong>：我发现这是一个 .zip 文件，且无法直接读取内容。</li>
+<li><strong>Action (行动)</strong>：调用 <code>list_files_in_zip</code> 工具查看内部结构。</li>
+<li><strong>Observation (观察)</strong>：工具返回文件列表，其中包含一个 <code>readme.txt</code>。</li>
+<li><strong>Thought (思考)</strong>：我应该读取 <code>readme.txt</code> 来获取该压缩包的主题信息。</li>
+<li><strong>Action (行动)</strong>：调用 <code>read_file_content</code> 工具。</li>
+</ol>
+<p>这种“思考-行动-观察”的闭环，让 Agent 的决策过程 from “黑盒”变成了“白盒”，极大地提升了任务执行的成功率。</p>
+<h2 id="4-总结：别把-AI-当神，把它当实习生"><a href="#4-总结：别把-AI-当神，把它当实习生" class="headerlink" title="4. 总结：别把 AI 当神，把它当实习生"></a>4. 总结：别把 AI 当神，把它当实习生</h2><p>最后分享一个心态：<strong>把 AI Agent 当成一个能力很强，但需要明确指引的“数字实习生”。</strong></p>
+<ul>
+<li>如果它执行出错，大概率是你没交代清楚边界（Constraint）。</li>
+<li>如果它输出不符合要求，大概率是你没给模板（Output）。</li>
+<li>如果它逻辑断了，大概率是你没引导它梳理过程（CoT）。</li>
+</ul>
+<p>提示词工程的核心不是写华丽的句子，而是<strong>用结构化思维消除歧义</strong>。</p>
+<hr>
+<p>在下一篇文章中，我们将聚焦 Agent 的“手脚”——<strong>工具调用（Tool Use）</strong>，聊聊如何设计工具才能让 Agent 用得更顺手。</p>
 
-<!-- history -->
+</article>
+    
+    
 
-<div class="row">
+</div>
+<div class="trm-post-next-prev row">
     <div class="col-lg-12">
         <!-- title -->
         <h5 class="trm-title-with-divider">
-            
-                AI Agent
-            
-            <span data-number="01"></span>
+            其他文章
+            <span data-number="02"></span>
         </h5>
     </div>
-    <div class="col-lg-12">
-        <!-- timeline -->
-        <div class="trm-timeline">
+    
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
             
-            <div class="trm-timeline-item trm-scroll-animation">
-                <div class="trm-timeline-mark-light"></div>
-                <div class="trm-timeline-mark"></div>
-                <div class="trm-timeline-content more">
-                    
-                        <div class="trm-card-header">
-                            <div class="trm-left-side">
-                                <h6>
-                                    <a href="/2026/01/07/tools/" class="trm-anima-link">
-                                        告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）
-                                    </a>
-                                </h6>
-                                <div class="trm-text-sm trm-accent-color trm-mt-15">
-                                    <ul class="trm-card-data trm-label ">
-                                        <li class="trm-accent-color">01/07</li>
-                                        <li class="trm-accent-color">17:21</li>
-                                        
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    
-                </div>
-            </div>
-            
-            <div class="trm-timeline-item trm-scroll-animation">
-                <div class="trm-timeline-mark-light"></div>
-                <div class="trm-timeline-mark"></div>
-                <div class="trm-timeline-content more">
-                    
-                        <div class="trm-card-header">
-                            <div class="trm-left-side">
-                                <h6>
-                                    <a href="/2026/01/07/prompt-md/" class="trm-anima-link">
-                                        告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）
-                                    </a>
-                                </h6>
-                                <div class="trm-text-sm trm-accent-color trm-mt-15">
-                                    <ul class="trm-card-data trm-label ">
-                                        <li class="trm-accent-color">01/07</li>
-                                        <li class="trm-accent-color">17:21</li>
-                                        
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    
-                </div>
-            </div>
-            
-            <div class="trm-timeline-item trm-scroll-animation">
-                <div class="trm-timeline-mark-light"></div>
-                <div class="trm-timeline-mark"></div>
-                <div class="trm-timeline-content more">
-                    
-                        <div class="trm-card-header">
-                            <div class="trm-left-side">
-                                <h6>
-                                    <a href="/2026/01/06/easy/" class="trm-anima-link">
-                                        从对话到执行：深入浅出 AI Agent 的现状与思考
-                                    </a>
-                                </h6>
-                                <div class="trm-text-sm trm-accent-color trm-mt-15">
-                                    <ul class="trm-card-data trm-label ">
-                                        <li class="trm-accent-color">01/06</li>
-                                        <li class="trm-accent-color">17:10</li>
-                                        
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        
-                    
-                </div>
-            </div>
-            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/07/prompt-md/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/07</li>
+                <li>17:21</li>
+                <li>AI AGENT</li>
+            </ul>
         </div>
-        <!-- timeline end -->
     </div>
 </div>
+    
+</div>
 
-<!-- history end -->
-
-
-    <div class="trm-pagination">
-        <span class="page-number current">1</span>
-    </div>
-
-
+    
 
 
 
@@ -474,6 +474,10 @@
             
 <div class="trm-fixed-container">
     
+    
+        <div class="trm-fixed-btn" data-title="阅读模式" onclick="asyncFun.switchReadMode()">
+            <i class="iconfont fas fa-book-reader"></i>
+        </div>
     
     
     <div id="trm-back-top" class="trm-fixed-btn" data-title="回到顶部">
@@ -548,6 +552,10 @@
     
 
     <!-- 评论插件 -->
+    
+        
+
+        
     
 
 		
