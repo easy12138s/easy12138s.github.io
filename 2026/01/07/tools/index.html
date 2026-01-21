@@ -7,15 +7,15 @@
 <meta name="full-screen" content="yes">
 <meta name="theme-color" content="#317EFB" />
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" name="viewport">
-<meta name="description" content="在系列上一篇文章中，我们聊到了 AI Agent 的核心定义与应用价值。如果说 Agent 是为大模型装上了“手脚”，那么**提示词（Prompt）**就是驱动这双手脚执行任务的“神经中枢”。 很多人把提示词称作“咒语”，仿佛靠几句玄学话术拼接就能让 AI 心领神会。但在 Agent 的工程化构建中，玄学是行不通的。所有“Agent 不听话”、“执行跑偏”的问题，本质上往往是提示词缺乏结构化设计的">
+<meta name="description" content="在上一篇文章中，我们聊到了如何通过结构化提示词来给 Agent 注入“灵魂”。但如果 Agent 只能在对话框里夸夸其谈，那它依然只是一个高级聊天机器人。 真正让 Agent 产生质变的，是它能够调用工具（Tool Use &#x2F; Function Calling）。 如果说大模型是“大脑”，提示词是“神经”，那么工具就是 Agent 触碰现实世界、操作数字系统的“手脚”。今天我们继续以 C">
 <meta property="og:type" content="article">
-<meta property="og:title" content="告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）">
+<meta property="og:title" content="连接数字世界的手脚：深度解析 AI Agent 的工具调用（Agent 技术分享系列三）">
 <meta property="og:url" content="http://example.com/2026/01/07/tools/index.html">
 <meta property="og:site_name" content="easy-box">
-<meta property="og:description" content="在系列上一篇文章中，我们聊到了 AI Agent 的核心定义与应用价值。如果说 Agent 是为大模型装上了“手脚”，那么**提示词（Prompt）**就是驱动这双手脚执行任务的“神经中枢”。 很多人把提示词称作“咒语”，仿佛靠几句玄学话术拼接就能让 AI 心领神会。但在 Agent 的工程化构建中，玄学是行不通的。所有“Agent 不听话”、“执行跑偏”的问题，本质上往往是提示词缺乏结构化设计的">
+<meta property="og:description" content="在上一篇文章中，我们聊到了如何通过结构化提示词来给 Agent 注入“灵魂”。但如果 Agent 只能在对话框里夸夸其谈，那它依然只是一个高级聊天机器人。 真正让 Agent 产生质变的，是它能够调用工具（Tool Use &#x2F; Function Calling）。 如果说大模型是“大脑”，提示词是“神经”，那么工具就是 Agent 触碰现实世界、操作数字系统的“手脚”。今天我们继续以 C">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-01-07T09:21:24.000Z">
-<meta property="article:modified_time" content="2026-01-07T09:57:03.052Z">
+<meta property="article:modified_time" content="2026-01-21T06:58:31.081Z">
 <meta property="article:author" content="easy">
 <meta property="article:tag" content="AI">
 <meta property="article:tag" content="AI Agent">
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary">
 
 
-<title >告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）</title>
+<title >连接数字世界的手脚：深度解析 AI Agent 的工具调用（Agent 技术分享系列三）</title>
 
 <!-- Favicon -->
 
@@ -64,7 +64,7 @@
 
 <!-- Variable -->
 <script>window.ASYNC_CONFIG = {"hostname":"example.com","author":"easy","root":"/","typed_text":null,"theme_version":"2.2.7","theme":{"switch":true,"default":"auto","animation":true},"favicon":{"logo":"/img/编程兔子_compressed.png","icon16":"/img/编程兔子_compressed.png","icon32":"/img/编程兔子_compressed.png","apple_touch_icon":null,"webmanifest":"/site.webmanifest","visibilitychange":true,"hidden":"failure.ico","show_text":"(/≧▽≦/)咦！又好了！","hide_text":"(●—●)喔哟，崩溃啦！"},"i18n":{"placeholder":"搜索文章...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）","author":"本文作者：","copyright_link":"本文链接：","copyright_license_title":"版权声明：","copyright_license_content":"本博客所有文章除特别声明外，均默认采用 undefined 许可协议。","copy_success":"复制成功","copy_failure":"复制失败","open_read_mode":"进入阅读模式","exit_read_mode":"退出阅读模式","notice_outdate_message":"距离上次更新已经 undefined 天了, 文章内容可能已经过时。","sticky":"置顶","just":"刚刚","min":"分钟前","hour":"小时前","day":"天前","month":"个月前"},"swup":false,"plugin":{"flickr_justified_gallery":"https://unpkg.com/flickr-justified-gallery@latest/dist/fjGallery.min.js"},"icons":{"sun":"far fa-sun","moon":"far fa-moon","play":"fas fa-play","email":"far fa-envelope","next":"fas fa-arrow-right","calendar":"far fa-calendar-alt","clock":"far fa-clock","user":"far fa-user","back_top":"fas fa-arrow-up","close":"fas fa-times","search":"fas fa-search","reward":"fas fa-hand-holding-usd","toc_tag":"fas fa-th-list","read":"fas fa-book-reader","arrows":"fas fa-arrows-alt-h","double_arrows":"fas fa-angle-double-down","copy":"fas fa-copy"},"icontype":"font","highlight":{"plugin":"highlighjs","theme":true,"copy":true,"lang":true,"title":"default","height_limit":false},"toc":{"post_title":true},"live_time":{"start_time":"","prefix":"博客已萌萌哒运行 undefined 天"},"danmu":{"enable":false,"el":".trm-banner"},"creative_commons":{"license":"by-nc-sa","language":"deed.zh-hans"},"search":{"enable":true,"type":"local","href":"https://www.google.com/search?q=site:","domain":null}};</script>
-<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2026-01-07 17:57:03"};</script>
+<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2026-01-21 14:58:31"};</script>
 
 <!-- Theme mode css -->
 <link data-swup-theme rel="stylesheet" href="/css/index.css?v=2.2.7" id="trm-switch-style">
@@ -219,7 +219,7 @@
                             NEWS LETTER
                         </div>
                         <h1 class="trm-mb-30 trm-hsmb-font">
-                            告别“咒语”：像程序员一样构建结构化提示词（Agent 技术分享系列二）
+                            连接数字世界的手脚：深度解析 AI Agent 的工具调用（Agent 技术分享系列三）
                         </h1>
 
                         
@@ -337,60 +337,49 @@
 </div>
 <div class="trm-card ">
     <article id="article-container" class="trm-publication">
-    <p>在<a href="easy.md">系列上一篇文章</a>中，我们聊到了 AI Agent 的核心定义与应用价值。如果说 Agent 是为大模型装上了“手脚”，那么**提示词（Prompt）**就是驱动这双手脚执行任务的“神经中枢”。</p>
-<p>很多人把提示词称作“咒语”，仿佛靠几句玄学话术拼接就能让 AI 心领神会。但在 Agent 的工程化构建中，玄学是行不通的。所有“Agent 不听话”、“执行跑偏”的问题，本质上往往是提示词缺乏结构化设计的结果。</p>
-<p>今天我们以我的开源项目 <a target="_blank" rel="noopener" href="https://github.com/easy12138s/cool-agent">Cool Agent</a> 为例，拆解一套适配 Agent 场景的提示词工程化思维。</p>
-<h2 id="1-结构化提示词：Agent-的“任务说明书”"><a href="#1-结构化提示词：Agent-的“任务说明书”" class="headerlink" title="1. 结构化提示词：Agent 的“任务说明书”"></a>1. 结构化提示词：Agent 的“任务说明书”</h2><p>早期的提示词更像零散的自然语言随笔，而在 Agent 开发视角下，优秀的提示词应该是一段<strong>可复用、可调试的任务说明书</strong>。</p>
-<p>目前最主流的结构化范式是 <strong>Role-Context-Task-Constraint-Output</strong>。我们可以把它想象成给 Agent 设定的“行动框架”。以 Cool Agent 的“智能文件重命名”功能为例：</p>
-<ul>
-<li><strong>Role (角色)</strong>：定义身份边界。<ul>
-<li><em>示例</em>：“你是一个专业的文件管理助手，擅长通过阅读文档内容提炼核心主题，并根据规则生成标准化的文件名。”</li>
-</ul>
-</li>
-<li><strong>Context (上下文)</strong>：补充背景信息。<ul>
-<li><em>示例</em>：“用户上传了一份扫描件的 OCR 文本，内容可能包含合同、会议记录或技术方案。你需要帮用户解决文件命名混乱的问题。”</li>
-</ul>
-</li>
-<li><strong>Task (任务)</strong>：明确核心目标。<ul>
-<li><em>示例</em>：“阅读文本，提取出文件类型、关键主体和日期，生成一个简洁的文件名。”</li>
-</ul>
-</li>
-<li><strong>Constraint (约束)</strong>：划定禁区，这是避免 Agent “乱操作”的关键。<ul>
-<li><em>示例</em>：“文件名不得包含特殊字符；必须以 YYYY-MM-DD 开头；严禁在输出中包含任何解释性文字，只输出最终的文件名。”</li>
-</ul>
-</li>
-<li><strong>Output (输出格式)</strong>：指定结果形式。<ul>
-<li><em>示例</em>：“输出格式为纯文本字符串，例如：2026-01-07_字节跳动_合作协议.pdf”。</li>
-</ul>
-</li>
-</ul>
-<p><strong>实战 Tip</strong>：在编写时，建议使用 Markdown 的标题（#）或列表来分隔这些模块。AI 对结构化文本的解析效率远高于大段文字。</p>
-<h2 id="2-进阶：让-Agent-精准推理的思维链-CoT"><a href="#2-进阶：让-Agent-精准推理的思维链-CoT" class="headerlink" title="2. 进阶：让 Agent 精准推理的思维链 (CoT)"></a>2. 进阶：让 Agent 精准推理的思维链 (CoT)</h2><p>在处理复杂逻辑时（比如判断文件的重要性或分类），即使指令清晰，Agent 也可能出现逻辑跳跃。这时就需要引入 <strong>Chain of Thought (CoT)</strong>。</p>
-<p>核心逻辑很简单：在指令中明确要求 Agent <strong>“输出你的思考过程”</strong>。</p>
-<p>在 Cool Agent 中，我们不会让它直接分类，而是引导它：</p>
-<blockquote>
-<p>“在给出分类结果前，请先 analysis 该文档的核心关键词，并对比现有的分类标准。将你的思考过程记录在 <code>&lt;thought&gt;</code> 标签内。”</p>
-</blockquote>
-<p>这种做法强迫模型在生成最终答案前进行推理，能显著降低“幻觉”和逻辑错误的概率。</p>
-<h2 id="3-运行范式：ReAct（推理-行动）"><a href="#3-运行范式：ReAct（推理-行动）" class="headerlink" title="3. 运行范式：ReAct（推理 + 行动）"></a>3. 运行范式：ReAct（推理 + 行动）</h2><p>我们在上一篇提到，Agent 的核心优势是“自主调用工具”。支撑这一优势的底层范式正是 <strong>ReAct (Reason + Act)</strong>。</p>
-<p>当 Cool Agent 发现自己无法直接处理某个文件时（比如是一个加密压缩包），它的 ReAct 循环会这样运行：</p>
+    <p>在<a href="prompt-md.md">上一篇文章</a>中，我们聊到了如何通过结构化提示词来给 Agent 注入“灵魂”。但如果 Agent 只能在对话框里夸夸其谈，那它依然只是一个高级聊天机器人。</p>
+<p>真正让 Agent 产生质变的，是它能够<strong>调用工具（Tool Use &#x2F; Function Calling）</strong>。</p>
+<p>如果说大模型是“大脑”，提示词是“神经”，那么工具就是 Agent 触碰现实世界、操作数字系统的“手脚”。今天我们继续以 <a target="_blank" rel="noopener" href="https://github.com/easy12138s/cool-agent">Cool Agent</a> 为例，聊聊如何为 Agent 设计一套好用的手脚。</p>
+<h2 id="1-为什么大模型需要“手脚”？"><a href="#1-为什么大模型需要“手脚”？" class="headerlink" title="1. 为什么大模型需要“手脚”？"></a>1. 为什么大模型需要“手脚”？</h2><p>即便是最强大的大模型（如 GPT-4o 或 Claude 3.5），也存在三个致命短板：</p>
 <ol>
-<li><strong>Thought (思考)</strong>：我发现这是一个 .zip 文件，且无法直接读取内容。</li>
-<li><strong>Action (行动)</strong>：调用 <code>list_files_in_zip</code> 工具查看内部结构。</li>
-<li><strong>Observation (观察)</strong>：工具返回文件列表，其中包含一个 <code>readme.txt</code>。</li>
-<li><strong>Thought (思考)</strong>：我应该读取 <code>readme.txt</code> 来获取该压缩包的主题信息。</li>
-<li><strong>Action (行动)</strong>：调用 <code>read_file_content</code> 工具。</li>
+<li><strong>信息滞后</strong>：它的知识停留在训练数据截止的那一天。</li>
+<li><strong>逻辑硬伤</strong>：复杂的数学运算或精准的时间计算经常翻车。</li>
+<li><strong>无法行动</strong>：它不能帮你订票，不能帮你改本地文件名，更不能帮你发邮件。</li>
 </ol>
-<p>这种“思考-行动-观察”的闭环，让 Agent 的决策过程 from “黑盒”变成了“白盒”，极大地提升了任务执行的成功率。</p>
-<h2 id="4-总结：别把-AI-当神，把它当实习生"><a href="#4-总结：别把-AI-当神，把它当实习生" class="headerlink" title="4. 总结：别把 AI 当神，把它当实习生"></a>4. 总结：别把 AI 当神，把它当实习生</h2><p>最后分享一个心态：<strong>把 AI Agent 当成一个能力很强，但需要明确指引的“数字实习生”。</strong></p>
+<p>通过工具调用，Agent 可以实时查询搜索、运行 Python 解释器、或者通过 API 读写你的本地文件。</p>
+<h2 id="2-工具调用的底层逻辑：从-Function-Calling-到-MCP"><a href="#2-工具调用的底层逻辑：从-Function-Calling-到-MCP" class="headerlink" title="2. 工具调用的底层逻辑：从 Function Calling 到 MCP"></a>2. 工具调用的底层逻辑：从 Function Calling 到 MCP</h2><p>目前主流的工具调用方案主要有两种：</p>
+<h3 id="传统的-Function-Calling"><a href="#传统的-Function-Calling" class="headerlink" title="传统的 Function Calling"></a>传统的 Function Calling</h3><p>这是 OpenAI 引领的范式。开发者在请求大模型时，先传一份“工具清单”（通常是 JSON Schema）。</p>
 <ul>
-<li>如果它执行出错，大概率是你没交代清楚边界（Constraint）。</li>
-<li>如果它输出不符合要求，大概率是你没给模板（Output）。</li>
-<li>如果它逻辑断了，大概率是你没引导它梳理过程（CoT）。</li>
+<li><strong>流程</strong>：用户提问 -&gt; 大模型判断需要工具 -&gt; 输出“调用指令” -&gt; 你的程序执行代码 -&gt; 将结果回传给模型 -&gt; 模型总结回答。</li>
 </ul>
-<p>提示词工程的核心不是写华丽的句子，而是<strong>用结构化思维消除歧义</strong>。</p>
+<h3 id="趋势：MCP-Model-Context-Protocol"><a href="#趋势：MCP-Model-Context-Protocol" class="headerlink" title="趋势：MCP (Model Context Protocol)"></a>趋势：MCP (Model Context Protocol)</h3><p>最近 Anthropic 提出的 <strong>MCP 协议</strong> 正在重塑这个领域。它不再是每个应用都写一遍 API，而是通过标准化的协议，让 Agent 像插拔 U 盘一样接入各种数据源和工具。这意味着你写好的一个“文件搜索工具”，可以同时无缝运行在不同的 Agent 框架中。</p>
+<h2 id="3-设计工具的三个“黄金法则”"><a href="#3-设计工具的三个“黄金法则”" class="headerlink" title="3. 设计工具的三个“黄金法则”"></a>3. 设计工具的三个“黄金法则”</h2><p>在开发 <a target="_blank" rel="noopener" href="https://github.com/easy12138s/cool-agent">Cool Agent</a> 的过程中，我总结了三条设计工具的心法：</p>
+<h3 id="A-描述比代码更重要"><a href="#A-描述比代码更重要" class="headerlink" title="A. 描述比代码更重要"></a>A. 描述比代码更重要</h3><p>在大模型眼里，工具的 <code>description</code> 就是它的使用说明书。</p>
+<ul>
+<li><strong>坏描述</strong>：<code>search_file(name: str)</code></li>
+<li><strong>好描述</strong>：<code>search_file(query: str) - 根据关键词模糊搜索本地文档，支持 .pdf 和 .docx 格式，返回文件路径列表。</code><br>描述越精准，大模型“误操作”的概率就越低。</li>
+</ul>
+<h3 id="B-原子化原则"><a href="#B-原子化原则" class="headerlink" title="B. 原子化原则"></a>B. 原子化原则</h3><p>不要试图写一个“万能工具”。把复杂的逻辑拆解成原子化的操作。</p>
+<ul>
+<li><strong>错误示范</strong>：一个工具完成“下载、解压、分析、总结”。</li>
+<li><strong>正确示范</strong>：拆分为 <code>download_url</code>、<code>unzip_file</code>、<code>read_content</code> 三个工具。这样 Agent 才能灵活组合，处理意料之外的情况。</li>
+</ul>
+<h3 id="C-容错与反馈循环"><a href="#C-容错与反馈循环" class="headerlink" title="C. 容错与反馈循环"></a>C. 容错与反馈循环</h3><p>工具必须能够“优雅地报错”。当 Agent 调用工具失败时，返回的错误信息（Error Message）应该包含：<strong>为什么失败</strong>以及<strong>建议怎么修</strong>。</p>
+<ul>
+<li>例如：<code>{&quot;error&quot;: &quot;文件路径不存在，请先调用 list_dir 确认当前目录下文件列表&quot;}</code>。看到这个，Agent 就会自动尝试先列出目录，而不是卡在那。</li>
+</ul>
+<h2 id="4-Cool-Agent-的实战：文件操作的闭环"><a href="#4-Cool-Agent-的实战：文件操作的闭环" class="headerlink" title="4. Cool Agent 的实战：文件操作的闭环"></a>4. Cool Agent 的实战：文件操作的闭环</h2><p>在 Cool Agent 中，我们为 Agent 接入了文件系统。当你说“帮我把下载文件夹里所有的图片按日期整理”时，它的执行链条是这样的：</p>
+<ol>
+<li><strong>Scan</strong>: 调用 <code>list_files(path=&quot;Downloads&quot;)</code>。</li>
+<li><strong>Identify</strong>: 对每个文件调用 <code>get_file_metadata</code> 获取创建日期。</li>
+<li><strong>Plan</strong>: 发现缺少对应的目标文件夹，调用 <code>mkdir(path=&quot;2024-01&quot;)</code>。</li>
+<li><strong>Move</strong>: 调用 <code>move_file(src, dst)</code>。</li>
+</ol>
+<p>每一环节都是通过精准的 API 设计和描述，引导大模型自主决策。</p>
+<h2 id="5-总结与下篇预告"><a href="#5-总结与下篇预告" class="headerlink" title="5. 总结与下篇预告"></a>5. 总结与下篇预告</h2><p>工具调用是 AI 从“感知”迈向“干预”的关键一步。作为开发者，我们不需要造出一个全能的神，而是要为 AI 提供一套足够标准、反馈及时的“工具箱”。</p>
 <hr>
-<p>在下一篇文章中，我们将聚焦 Agent 的“手脚”——<strong>工具调用（Tool Use）</strong>，聊聊如何设计工具才能让 Agent 用得更顺手。</p>
+<p>本系列的前三篇，我们分别聊了 Agent 的现状、提示词中枢和工具手脚。在下一篇文章中，我们将进入 Agent 的进阶课题——<strong>长短期记忆（Memory）</strong>。</p>
+<p>为什么 Agent 总是不长记性？如何让它记得你昨天的偏好？我们下篇见。</p>
 
 </article>
     
