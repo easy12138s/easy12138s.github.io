@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-Hans,default">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="x5-fullscreen" content="true">
+<meta name="full-screen" content="yes">
+<meta name="theme-color" content="#317EFB" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" name="viewport">
+<meta name="description" content="英文标题: Introducing Contextual Retrieval 原文链接: https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;contextual-retrieval 我们很高兴介绍上下文检索，这是一种改进检索增强生成（RAG）系统的新方法。通过考虑查询的上下文，我们可以提供更相关、更准确的结果。 什么是上下文检索？上下文检索是一种检索方法，它：  考虑查询">
+<meta property="og:type" content="article">
+<meta property="og:title" content="上下文检索技术介绍">
+<meta property="og:url" content="http://example.com/2026/01/06/18_%E4%B8%8A%E4%B8%8B%E6%96%87%E6%A3%80%E7%B4%A2%E6%8A%80%E6%9C%AF%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="easy-box">
+<meta property="og:description" content="英文标题: Introducing Contextual Retrieval 原文链接: https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;contextual-retrieval 我们很高兴介绍上下文检索，这是一种改进检索增强生成（RAG）系统的新方法。通过考虑查询的上下文，我们可以提供更相关、更准确的结果。 什么是上下文检索？上下文检索是一种检索方法，它：  考虑查询">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-06T09:10:16.000Z">
+<meta property="article:modified_time" content="2026-03-06T08:41:22.089Z">
+<meta property="article:author" content="easy">
+<meta property="article:tag" content="AGENT">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+
+
+<title >上下文检索技术介绍</title>
+
+<!-- Favicon -->
+
+    <link href='/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png?v=2.2.7' rel='icon' type='image/png' sizes='16x16' ></link>
+
+
+    <link href='/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png?v=2.2.7' rel='icon' type='image/png' sizes='32x32' ></link>
+
+
+
+    <link href='/site.webmanifest' rel='manifest' ></link>
+
+
+<!-- Plugin -->
+
+
+
+
+    
+<link rel="stylesheet" href="https://unpkg.com/hexo-theme-async@2.2.7/source/css/plugins/bootstrap.row.css">
+
+    
+<link rel="stylesheet" href="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.css">
+
+    
+    
+
+
+
+
+<!-- Icon -->
+
+    
+<link rel="stylesheet" href="/css/plugins/font-awesome.min.css">
+
+
+
+
+<!-- Variable -->
+<script>window.ASYNC_CONFIG = {"hostname":"example.com","author":"easy","root":"/","typed_text":null,"theme_version":"2.2.7","theme":{"switch":true,"default":"auto","animation":true},"favicon":{"logo":"/img/编程兔子_compressed.png","icon16":"/img/编程兔子_compressed.png","icon32":"/img/编程兔子_compressed.png","apple_touch_icon":null,"webmanifest":"/site.webmanifest","visibilitychange":true,"hidden":"failure.ico","show_text":"(/≧▽≦/)咦！又好了！","hide_text":"(●—●)喔哟，崩溃啦！"},"i18n":{"placeholder":"搜索文章...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）","author":"本文作者：","copyright_link":"本文链接：","copyright_license_title":"版权声明：","copyright_license_content":"本博客所有文章除特别声明外，均默认采用 undefined 许可协议。","copy_success":"复制成功","copy_failure":"复制失败","open_read_mode":"进入阅读模式","exit_read_mode":"退出阅读模式","notice_outdate_message":"距离上次更新已经 undefined 天了, 文章内容可能已经过时。","sticky":"置顶","just":"刚刚","min":"分钟前","hour":"小时前","day":"天前","month":"个月前"},"swup":false,"plugin":{"flickr_justified_gallery":"https://unpkg.com/flickr-justified-gallery@latest/dist/fjGallery.min.js"},"icons":{"sun":"far fa-sun","moon":"far fa-moon","play":"fas fa-play","email":"far fa-envelope","next":"fas fa-arrow-right","calendar":"far fa-calendar-alt","clock":"far fa-clock","user":"far fa-user","back_top":"fas fa-arrow-up","close":"fas fa-times","search":"fas fa-search","reward":"fas fa-hand-holding-usd","toc_tag":"fas fa-th-list","read":"fas fa-book-reader","arrows":"fas fa-arrows-alt-h","double_arrows":"fas fa-angle-double-down","copy":"fas fa-copy"},"icontype":"font","highlight":{"plugin":"highlighjs","theme":true,"copy":true,"lang":true,"title":"default","height_limit":false},"toc":{"post_title":true},"live_time":{"start_time":"","prefix":"博客已萌萌哒运行 undefined 天"},"danmu":{"enable":false,"el":".trm-banner"},"creative_commons":{"license":"by-nc-sa","language":"deed.zh-hans"},"search":{"enable":true,"type":"local","href":"https://www.google.com/search?q=site:","domain":null}};</script>
+<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2026-03-06 16:41:22"};</script>
+
+<!-- Theme mode css -->
+<link data-swup-theme rel="stylesheet" href="/css/index.css?v=2.2.7" id="trm-switch-style">
+<script>
+    let defaultMode = ASYNC_CONFIG.theme.default !=='auto' ?  ASYNC_CONFIG.theme.default : (window.matchMedia("(prefers-color-scheme: light)").matches ? 'style-light' : 'style-dark')
+    let catchMode = localStorage.getItem('theme-mode') || defaultMode;
+    let type = catchMode === 'style-dark' ? 'add' : 'remove';
+    document.documentElement.classList[type]('dark')
+</script>
+
+<!-- CDN -->
+
+
+    
+    
+
+
+
+<!-- Site Analytics -->
+
+ 
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+  <!-- app wrapper -->
+  <div class="trm-app-frame">
+
+    <!-- page preloader -->
+    <div class="trm-preloader">
+    <div class="trm-holder">
+        <div class="preloader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+    <!-- page preloader end -->
+
+    <!-- change mode preloader -->
+    <div class="trm-mode-swich-animation-frame">
+    <div class="trm-mode-swich-animation">
+        <i class="i-sun"><i class="iconfont far fa-sun"></i></i>
+        <div class="trm-horizon"></div>
+        <i class="i-moon"><i class="iconfont far fa-moon"></i></i>
+    </div>
+</div>
+    <!-- change mode preloader end -->
+
+      <!-- scroll container -->
+      <div id="trm-dynamic-content" class="trm-swup-animation">
+        <div id="trm-scroll-container" class="trm-scroll-container" style="opacity: 0">
+            <!-- top bar -->
+            <header class="trm-top-bar">
+	<div class="container">
+		<div class="trm-left-side">
+			<!-- logo -->
+<a href="/" class="trm-logo-frame trm-anima-link">
+    
+        <img alt="logo" src="/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png">
+    
+    
+        <div class="trm-logo-text">
+            Easy-Box<span></span>
+        </div>
+    
+</a>
+<!-- logo end -->
+		</div>
+		<div class="trm-right-side">
+			<!-- menu -->
+<div class="trm-menu">
+    <nav>
+        <ul>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/" target="">
+                    首页
+                </a>
+                
+            </li>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/archives/" target="">
+                    归档
+                </a>
+                
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+<!-- menu end -->
+			
+    <!-- mode switcher place -->
+    <div class="trm-mode-switcher-place">
+        <div class="trm-mode-switcher">
+            <i class="iconfont far fa-sun"></i>
+            <input class="tgl tgl-light" id="trm-swich" type="checkbox">
+            <label class="trm-swich" for="trm-swich"></label>
+            <i class="iconfont far fa-moon"></i>
+        </div>
+    </div>
+    <!-- mode switcher place end -->
+
+			
+    
+    <div id="trm-search-btn" class="trm-search-btn">
+        <i class="iconfont fas fa-search"></i>
+    </div>
+     
+
+		</div>
+		<div class="trm-menu-btn">
+			<span></span>
+		</div>
+	</div>
+</header>
+            <!-- top bar end -->
+
+            <!-- body -->
+            
+<div class="trm-content-start">
+    <!-- banner -->
+    <div class="trm-banner">
+    
+    <!-- banner cover -->
+    <img style="object-position:top;object-fit:cover;" alt="banner" class="trm-banner-cover" src="/img/banner.png">
+    <!-- banner cover end -->
+    
+
+    <!-- banner content -->
+    <div class="trm-banner-content trm-overlay">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-4"></div>
+                
+                <div class="col-lg-8">
+
+                    <!-- banner title -->
+                    <div class="trm-banner-text ">
+                        <div class="trm-label trm-mb-20">
+                            NEWS LETTER
+                        </div>
+                        <h1 class="trm-mb-30 trm-hsmb-font">
+                            上下文检索技术介绍
+                        </h1>
+
+                        
+                            <ul class="trm-breadcrumbs trm-label">
+                                <li>
+                                    <a href="/" class="trm-anima-link">Home</a>
+                                </li>
+                                <li>
+                                    <span>
+                                        2026
+                                    </span>
+                                </li>
+                            </ul>
+                        
+                    </div>
+                    <!-- banner title end -->
+
+                    <!-- scroll hint -->
+                    <span id="scroll-triger" class="trm-scroll-hint-frame">
+                        <div class="trm-scroll-hint"></div>
+                        <span class="trm-label">Scroll down</span>
+                    </span>
+                    <!-- scroll hint end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- banner content end -->
+</div>
+    <!-- banner end -->
+    <div class="container">
+        <div class="row">
+            
+                <div class="trm-page-sidebar col-lg-4 hidden-sm">
+                    <!-- main card -->
+                    <div class="trm-main-card-frame trm-sidebar">
+    <div class="trm-main-card"> 
+        <!-- card header -->
+<div class="trm-mc-header">
+    <div class="trm-avatar-frame trm-mb-20">
+        <img alt="Avatar" class="trm-avatar" src="/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png">
+    </div>
+    <h5 class="trm-name trm-mb-15">
+        EASY
+    </h5>
+    
+</div>
+<!-- card header end -->
+        <!-- sidebar social -->
+
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<div class="trm-social">
+    
+        <a href="https://github.com" title="Github" rel="nofollow" target="_blank">
+            <i class="iconfont fab fa-github"></i>
+        </a>
+    
+</div>
+
+<!-- sidebar social end -->
+        <!-- info -->
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<ul class="trm-table trm-mb-20">
+    
+        <li>
+            <div class="trm-label">
+                Residence:
+            </div>
+            <div class="trm-label trm-label-light">
+                Mars
+            </div>
+        </li>
+    
+</ul>
+<!-- info end -->
+
+        
+    <div class="trm-divider trm-mb-40 trm-mt-40"></div>
+    <!-- action button -->
+    <div class="text-center">
+        <a href="mailto:easy2022163@163.com" class="trm-btn">
+            联系我
+            <i class="iconfont far fa-envelope"></i>
+        </a>
+    </div>
+    <!-- action button end -->
+
+    </div>
+</div>
+                    <!-- main card end -->
+                </div>
+            
+            <div class="trm-page-content col-lg-8">
+                <div id="trm-content" class="trm-content">
+                    <div class="trm-post-info row hidden-sm">
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-calendar-alt trm-icon"></i><br>
+            01/06
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-clock trm-icon"></i><br>
+            17:10
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div id="post-author" class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-user trm-icon"></i><br>
+            easy
+        </div>
+    </div>
+</div>
+<div class="trm-card ">
+    <article id="article-container" class="trm-publication">
+    <p><strong>英文标题</strong>: Introducing Contextual Retrieval</p>
+<p><strong>原文链接</strong>: <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/contextual-retrieval">https://www.anthropic.com/engineering/contextual-retrieval</a></p>
+<p>我们很高兴介绍上下文检索，这是一种改进检索增强生成（RAG）系统的新方法。通过考虑查询的上下文，我们可以提供更相关、更准确的结果。</p>
+<h2 id="什么是上下文检索？"><a href="#什么是上下文检索？" class="headerlink" title="什么是上下文检索？"></a>什么是上下文检索？</h2><p>上下文检索是一种检索方法，它：</p>
+<ul>
+<li>考虑查询的上下文</li>
+<li>理解用户意图</li>
+<li>提供更相关的结果</li>
+<li>改进整体RAG性能</li>
+</ul>
+<h2 id="为什么需要上下文检索？"><a href="#为什么需要上下文检索？" class="headerlink" title="为什么需要上下文检索？"></a>为什么需要上下文检索？</h2><h3 id="传统RAG的局限性"><a href="#传统RAG的局限性" class="headerlink" title="传统RAG的局限性"></a>传统RAG的局限性</h3><p>标准检索方法：</p>
+<ul>
+<li>只匹配关键词</li>
+<li>忽略查询意图</li>
+<li>缺乏上下文理解</li>
+<li>提供通用结果</li>
+</ul>
+<h3 id="上下文的重要性"><a href="#上下文的重要性" class="headerlink" title="上下文的重要性"></a>上下文的重要性</h3><p>相同的查询在不同上下文中可能有不同的含义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot;苹果&quot;</span><br><span class="line">- 在科技上下文中：指苹果公司</span><br><span class="line">- 在食品上下文中：指水果</span><br><span class="line">- 在音乐上下文中：指唱片公司</span><br></pre></td></tr></table></figure>
+
+<h2 id="我们的方法"><a href="#我们的方法" class="headerlink" title="我们的方法"></a>我们的方法</h2><h3 id="上下文理解"><a href="#上下文理解" class="headerlink" title="上下文理解"></a>上下文理解</h3><p>我们使用多种信号来理解上下文：</p>
+<ol>
+<li><p><strong>对话历史</strong></p>
+<ul>
+<li>之前的查询</li>
+<li>之前的回答</li>
+<li>用户反馈</li>
+</ul>
+</li>
+<li><p><strong>用户偏好</strong></p>
+<ul>
+<li>常用术语</li>
+<li>专业领域</li>
+<li>查询模式</li>
+</ul>
+</li>
+<li><p><strong>文档元数据</strong></p>
+<ul>
+<li>文档类型</li>
+<li>创建时间</li>
+<li>作者信息</li>
+</ul>
+</li>
+</ol>
+<h3 id="检索过程"><a href="#检索过程" class="headerlink" title="检索过程"></a>检索过程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">用户查询</span><br><span class="line">    ↓</span><br><span class="line">上下文分析</span><br><span class="line">    ↓</span><br><span class="line">查询扩展</span><br><span class="line">    ↓</span><br><span class="line">语义搜索</span><br><span class="line">    ↓</span><br><span class="line">上下文重排序</span><br><span class="line">    ↓</span><br><span class="line">结果返回</span><br></pre></td></tr></table></figure>
+
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="上下文编码"><a href="#上下文编码" class="headerlink" title="上下文编码"></a>上下文编码</h3><p>将上下文编码为向量表示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">encode_context</span>(<span class="params">conversation_history, user_preferences</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;将上下文编码为向量&quot;&quot;&quot;</span></span><br><span class="line">    context_vector = model.encode(</span><br><span class="line">        history=conversation_history,</span><br><span class="line">        preferences=user_preferences</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> context_vector</span><br></pre></td></tr></table></figure>
+
+<h3 id="上下文感知搜索"><a href="#上下文感知搜索" class="headerlink" title="上下文感知搜索"></a>上下文感知搜索</h3><p>使用上下文来指导搜索：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">contextual_search</span>(<span class="params">query, context_vector, documents</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;执行上下文感知搜索&quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 扩展查询</span></span><br><span class="line">    expanded_query = expand_query(query, context_vector)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 语义搜索</span></span><br><span class="line">    candidates = semantic_search(expanded_query, documents)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 上下文重排序</span></span><br><span class="line">    ranked = rerank_by_context(candidates, context_vector)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ranked</span><br></pre></td></tr></table></figure>
+
+<h3 id="动态适应"><a href="#动态适应" class="headerlink" title="动态适应"></a>动态适应</h3><p>根据反馈调整上下文：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">update_context</span>(<span class="params">current_context, user_feedback</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;基于反馈更新上下文&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> user_feedback.is_relevant:</span><br><span class="line">        current_context.reinforce(user_feedback.topic)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        current_context.adjust(user_feedback.correction)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> current_context</span><br></pre></td></tr></table></figure>
+
+<h2 id="好处"><a href="#好处" class="headerlink" title="好处"></a>好处</h2><h3 id="提高相关性"><a href="#提高相关性" class="headerlink" title="提高相关性"></a>提高相关性</h3><p>结果更符合用户意图：</p>
+<ul>
+<li>更好的上下文匹配</li>
+<li>改进的语义理解</li>
+<li>个性化的结果</li>
+<li>减少不相关结果</li>
+</ul>
+<h3 id="更好的用户体验"><a href="#更好的用户体验" class="headerlink" title="更好的用户体验"></a>更好的用户体验</h3><p>用户找到他们需要的：</p>
+<ul>
+<li>更快的信息发现</li>
+<li>更少的搜索尝试</li>
+<li>更高的满意度</li>
+<li>提高生产力</li>
+</ul>
+<h3 id="减少幻觉"><a href="#减少幻觉" class="headerlink" title="减少幻觉"></a>减少幻觉</h3><p>上下文帮助提供更准确的回答：</p>
+<ul>
+<li>更好的信息来源</li>
+<li>改进的事实核查</li>
+<li>更少的错误信息</li>
+<li>更高的可信度</li>
+</ul>
+<h2 id="使用案例"><a href="#使用案例" class="headerlink" title="使用案例"></a>使用案例</h2><h3 id="客户支持"><a href="#客户支持" class="headerlink" title="客户支持"></a>客户支持</h3><p>理解客户问题的上下文：</p>
+<ul>
+<li>之前的交互</li>
+<li>产品使用情况</li>
+<li>问题历史</li>
+<li>账户信息</li>
+</ul>
+<h3 id="代码文档"><a href="#代码文档" class="headerlink" title="代码文档"></a>代码文档</h3><p>根据开发上下文提供相关文档：</p>
+<ul>
+<li>当前代码库</li>
+<li>使用的框架</li>
+<li>开发阶段</li>
+<li>团队实践</li>
+</ul>
+<h3 id="研究助手"><a href="#研究助手" class="headerlink" title="研究助手"></a>研究助手</h3><p>根据研究领域提供相关论文：</p>
+<ul>
+<li>研究主题</li>
+<li>之前阅读</li>
+<li>引用模式</li>
+<li>合作网络</li>
+</ul>
+<h2 id="实施指南"><a href="#实施指南" class="headerlink" title="实施指南"></a>实施指南</h2><h3 id="集成步骤"><a href="#集成步骤" class="headerlink" title="集成步骤"></a>集成步骤</h3><ol>
+<li><p><strong>收集上下文</strong></p>
+<ul>
+<li>对话历史</li>
+<li>用户偏好</li>
+<li>应用状态</li>
+</ul>
+</li>
+<li><p><strong>编码上下文</strong></p>
+<ul>
+<li>使用嵌入模型</li>
+<li>创建上下文向量</li>
+<li>更新实时</li>
+</ul>
+</li>
+<li><p><strong>修改检索</strong></p>
+<ul>
+<li>扩展查询</li>
+<li>上下文重排序</li>
+<li>动态过滤</li>
+</ul>
+</li>
+<li><p><strong>评估改进</strong></p>
+<ul>
+<li>相关性指标</li>
+<li>用户反馈</li>
+<li>A&#x2F;B测试</li>
+</ul>
+</li>
+</ol>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><ol>
+<li><p><strong>平衡上下文</strong></p>
+<ul>
+<li>不要太重（忽略当前查询）</li>
+<li>不要太轻（失去上下文好处）</li>
+<li>找到正确的权重</li>
+</ul>
+</li>
+<li><p><strong>处理边缘情况</strong></p>
+<ul>
+<li>新用户（无历史）</li>
+<li>话题切换</li>
+<li>长对话（上下文漂移）</li>
+</ul>
+</li>
+<li><p><strong>隐私考虑</strong></p>
+<ul>
+<li>用户同意</li>
+<li>数据最小化</li>
+<li>安全存储</li>
+<li>透明使用</li>
+</ul>
+</li>
+</ol>
+<h2 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h2><h3 id="改进的指标"><a href="#改进的指标" class="headerlink" title="改进的指标"></a>改进的指标</h3><p>与传统RAG相比：</p>
+<ul>
+<li>相关性提高35%</li>
+<li>用户满意度提高42%</li>
+<li>搜索时间减少20%</li>
+<li>重复查询减少28%</li>
+</ul>
+<h3 id="用户反馈"><a href="#用户反馈" class="headerlink" title="用户反馈"></a>用户反馈</h3><p>用户报告：</p>
+<ul>
+<li>“结果更符合我想要的”</li>
+<li>“感觉系统理解我”</li>
+<li>“更快找到信息”</li>
+<li>“更少的无关结果”</li>
+</ul>
+<h2 id="未来方向"><a href="#未来方向" class="headerlink" title="未来方向"></a>未来方向</h2><h3 id="多模态上下文"><a href="#多模态上下文" class="headerlink" title="多模态上下文"></a>多模态上下文</h3><p>扩展到文本之外：</p>
+<ul>
+<li>图像理解</li>
+<li>音频上下文</li>
+<li>视频分析</li>
+<li>传感器数据</li>
+</ul>
+<h3 id="跨会话学习"><a href="#跨会话学习" class="headerlink" title="跨会话学习"></a>跨会话学习</h3><p>在会话之间保持上下文：</p>
+<ul>
+<li>长期偏好</li>
+<li>知识积累</li>
+<li>模式识别</li>
+<li>个性化模型</li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>上下文检索代表了RAG系统的重大进步。通过理解查询的上下文，我们可以提供更相关、更有用的结果，最终改善用户体验和系统性能。</p>
+<hr>
+<p><em>原文发布于 Anthropic Engineering Blog</em></p>
+<p><em>原文链接: <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/contextual-retrieval">https://www.anthropic.com/engineering/contextual-retrieval</a></em></p>
+
+</article>
+    
+    
+
+</div>
+<div class="trm-post-next-prev row">
+    <div class="col-lg-12">
+        <!-- title -->
+        <h5 class="trm-title-with-divider">
+            其他文章
+            <span data-number="02"></span>
+        </h5>
+    </div>
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
+            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/06/easy/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">从对话到执行：深入浅出 AI Agent 的现状与思考</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/06</li>
+                <li>17:10</li>
+                <li>AI AGENT</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
+            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/06/13_%E6%88%91%E4%BB%AC%E5%A6%82%E4%BD%95%E6%9E%84%E5%BB%BA%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%A0%94%E7%A9%B6%E7%B3%BB%E7%BB%9F/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">我们如何构建多智能体研究系统</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/06</li>
+                <li>17:10</li>
+                <li>文章转载</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+</div>
+
+    
+
+
+
+                    <div class="trm-divider footer-divider"></div>
+
+                    <!-- footer -->
+                    <footer class="trm-footer-card trm-scroll-animation">
+
+    
+
+    
+
+    
+        <div class="trm-footer-item">
+            <span>
+                由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1
+            </span>
+            <span class="footer-separator" data-separator=" | "></span>
+            <span> 
+                主题 - 
+                <a rel="noopener" href='https://github.com/MaLuns/hexo-theme-async' target='_blank'>Async</a>
+                v2.2.7
+            </span>
+        </div>
+      
+
+     
+
+     
+</footer>
+                    <!-- footer end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- body end -->
+
+            
+
+            
+<div class="trm-fixed-container">
+    
+    
+        <div class="trm-fixed-btn" data-title="阅读模式" onclick="asyncFun.switchReadMode()">
+            <i class="iconfont fas fa-book-reader"></i>
+        </div>
+    
+    
+    <div id="trm-back-top" class="trm-fixed-btn" data-title="回到顶部">
+        <i class="iconfont fas fa-arrow-up"></i>
+    </div>
+</div>
+        </div>
+      </div>
+      <!-- scroll container end -->
+  </div>
+  <!-- app wrapper end -->
+
+  
+    <div class="trm-search-popup">
+        <div class="trm-search-wrapper">
+            <div class="form trm-search-form">
+                <div class="trm-search-input-icon">
+                    <i class="iconfont fas fa-search"></i>
+                </div>
+                <input class="trm-search-input" type="text" placeholder="搜索文章...">
+                <div class="trm-search-btn-close">
+                    <i class="iconfont fas fa-times"></i>
+                </div>
+            </div>
+            <div class="trm-search-result-container">
+                <div class="trm-search-empty">
+                    请输入关键词进行搜索
+                </div>
+            </div>
+            <div class="trm-search-footer">
+                <div class="trm-search-stats"></div>
+                <ul class="trm-search-commands">
+                    <li>
+                        <kbd class="command-palette-commands-key">
+                            <svg width="15" height="15" aria-label="Escape key" role="img">
+                                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="1.2">
+                                    <path
+                                        d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956">
+                                    </path>
+                                </g>
+                            </svg>
+                        </kbd>
+                        <span class="command-palette-Label">to close</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+  <!-- Plugin -->
+
+
+
+
+    
+    
+<script src="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+
+    
+
+    
+
+    
+        
+<script src="https://unpkg.com/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+
+        <script src="https://unpkg.com/hexo-theme-async@2.2.7/source/js/plugins/local_search.js?v=2.2.7"></script>
+    
+
+    <!-- 数学公式 -->
+    
+
+    <!-- 评论插件 -->
+    
+        
+
+        
+    
+
+		
+
+
+
+
+    <!-- Service Worker -->
+    
+    <!-- baidu push -->
+    
+
+
+<script id="async-script" src="https://unpkg.com/hexo-theme-async@2.2.7/source/js/main.js?v=2.2.7"></script>
+
+<!-- CDN -->
+
+
+    
+
+    
+
+    
+
+
+
+</body>
+
+</html>

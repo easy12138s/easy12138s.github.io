@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-Hans,default">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="x5-fullscreen" content="true">
+<meta name="full-screen" content="yes">
+<meta name="theme-color" content="#317EFB" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" name="viewport">
+<meta name="description" content="英文标题: Raising the bar on SWE-bench Verified with Claude 3.5 Sonnet 原文链接: https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;swe-bench-sonnet 我们很高兴分享Claude 3.5 Sonnet在SWE-bench Verified上的新最先进结果，这是一个评估AI系统解决真实GitHub">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用Claude 3.5 Sonnet提升SWE-bench Verified标准">
+<meta property="og:url" content="http://example.com/2026/01/06/16_%E7%94%A8Claude_3.5_Sonnet%E6%8F%90%E5%8D%87SWE-bench_Verified%E6%A0%87%E5%87%86/index.html">
+<meta property="og:site_name" content="easy-box">
+<meta property="og:description" content="英文标题: Raising the bar on SWE-bench Verified with Claude 3.5 Sonnet 原文链接: https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;swe-bench-sonnet 我们很高兴分享Claude 3.5 Sonnet在SWE-bench Verified上的新最先进结果，这是一个评估AI系统解决真实GitHub">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-06T09:10:16.000Z">
+<meta property="article:modified_time" content="2026-03-06T08:41:10.550Z">
+<meta property="article:author" content="easy">
+<meta property="article:tag" content="AGENT">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+
+
+<title >用Claude 3.5 Sonnet提升SWE-bench Verified标准</title>
+
+<!-- Favicon -->
+
+    <link href='/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png?v=2.2.7' rel='icon' type='image/png' sizes='16x16' ></link>
+
+
+    <link href='/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png?v=2.2.7' rel='icon' type='image/png' sizes='32x32' ></link>
+
+
+
+    <link href='/site.webmanifest' rel='manifest' ></link>
+
+
+<!-- Plugin -->
+
+
+
+
+    
+<link rel="stylesheet" href="https://unpkg.com/hexo-theme-async@2.2.7/source/css/plugins/bootstrap.row.css">
+
+    
+<link rel="stylesheet" href="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.css">
+
+    
+    
+
+
+
+
+<!-- Icon -->
+
+    
+<link rel="stylesheet" href="/css/plugins/font-awesome.min.css">
+
+
+
+
+<!-- Variable -->
+<script>window.ASYNC_CONFIG = {"hostname":"example.com","author":"easy","root":"/","typed_text":null,"theme_version":"2.2.7","theme":{"switch":true,"default":"auto","animation":true},"favicon":{"logo":"/img/编程兔子_compressed.png","icon16":"/img/编程兔子_compressed.png","icon32":"/img/编程兔子_compressed.png","apple_touch_icon":null,"webmanifest":"/site.webmanifest","visibilitychange":true,"hidden":"failure.ico","show_text":"(/≧▽≦/)咦！又好了！","hide_text":"(●—●)喔哟，崩溃啦！"},"i18n":{"placeholder":"搜索文章...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）","author":"本文作者：","copyright_link":"本文链接：","copyright_license_title":"版权声明：","copyright_license_content":"本博客所有文章除特别声明外，均默认采用 undefined 许可协议。","copy_success":"复制成功","copy_failure":"复制失败","open_read_mode":"进入阅读模式","exit_read_mode":"退出阅读模式","notice_outdate_message":"距离上次更新已经 undefined 天了, 文章内容可能已经过时。","sticky":"置顶","just":"刚刚","min":"分钟前","hour":"小时前","day":"天前","month":"个月前"},"swup":false,"plugin":{"flickr_justified_gallery":"https://unpkg.com/flickr-justified-gallery@latest/dist/fjGallery.min.js"},"icons":{"sun":"far fa-sun","moon":"far fa-moon","play":"fas fa-play","email":"far fa-envelope","next":"fas fa-arrow-right","calendar":"far fa-calendar-alt","clock":"far fa-clock","user":"far fa-user","back_top":"fas fa-arrow-up","close":"fas fa-times","search":"fas fa-search","reward":"fas fa-hand-holding-usd","toc_tag":"fas fa-th-list","read":"fas fa-book-reader","arrows":"fas fa-arrows-alt-h","double_arrows":"fas fa-angle-double-down","copy":"fas fa-copy"},"icontype":"font","highlight":{"plugin":"highlighjs","theme":true,"copy":true,"lang":true,"title":"default","height_limit":false},"toc":{"post_title":true},"live_time":{"start_time":"","prefix":"博客已萌萌哒运行 undefined 天"},"danmu":{"enable":false,"el":".trm-banner"},"creative_commons":{"license":"by-nc-sa","language":"deed.zh-hans"},"search":{"enable":true,"type":"local","href":"https://www.google.com/search?q=site:","domain":null}};</script>
+<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2026-03-06 16:41:10"};</script>
+
+<!-- Theme mode css -->
+<link data-swup-theme rel="stylesheet" href="/css/index.css?v=2.2.7" id="trm-switch-style">
+<script>
+    let defaultMode = ASYNC_CONFIG.theme.default !=='auto' ?  ASYNC_CONFIG.theme.default : (window.matchMedia("(prefers-color-scheme: light)").matches ? 'style-light' : 'style-dark')
+    let catchMode = localStorage.getItem('theme-mode') || defaultMode;
+    let type = catchMode === 'style-dark' ? 'add' : 'remove';
+    document.documentElement.classList[type]('dark')
+</script>
+
+<!-- CDN -->
+
+
+    
+    
+
+
+
+<!-- Site Analytics -->
+
+ 
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+  <!-- app wrapper -->
+  <div class="trm-app-frame">
+
+    <!-- page preloader -->
+    <div class="trm-preloader">
+    <div class="trm-holder">
+        <div class="preloader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+    <!-- page preloader end -->
+
+    <!-- change mode preloader -->
+    <div class="trm-mode-swich-animation-frame">
+    <div class="trm-mode-swich-animation">
+        <i class="i-sun"><i class="iconfont far fa-sun"></i></i>
+        <div class="trm-horizon"></div>
+        <i class="i-moon"><i class="iconfont far fa-moon"></i></i>
+    </div>
+</div>
+    <!-- change mode preloader end -->
+
+      <!-- scroll container -->
+      <div id="trm-dynamic-content" class="trm-swup-animation">
+        <div id="trm-scroll-container" class="trm-scroll-container" style="opacity: 0">
+            <!-- top bar -->
+            <header class="trm-top-bar">
+	<div class="container">
+		<div class="trm-left-side">
+			<!-- logo -->
+<a href="/" class="trm-logo-frame trm-anima-link">
+    
+        <img alt="logo" src="/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png">
+    
+    
+        <div class="trm-logo-text">
+            Easy-Box<span></span>
+        </div>
+    
+</a>
+<!-- logo end -->
+		</div>
+		<div class="trm-right-side">
+			<!-- menu -->
+<div class="trm-menu">
+    <nav>
+        <ul>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/" target="">
+                    首页
+                </a>
+                
+            </li>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/archives/" target="">
+                    归档
+                </a>
+                
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+<!-- menu end -->
+			
+    <!-- mode switcher place -->
+    <div class="trm-mode-switcher-place">
+        <div class="trm-mode-switcher">
+            <i class="iconfont far fa-sun"></i>
+            <input class="tgl tgl-light" id="trm-swich" type="checkbox">
+            <label class="trm-swich" for="trm-swich"></label>
+            <i class="iconfont far fa-moon"></i>
+        </div>
+    </div>
+    <!-- mode switcher place end -->
+
+			
+    
+    <div id="trm-search-btn" class="trm-search-btn">
+        <i class="iconfont fas fa-search"></i>
+    </div>
+     
+
+		</div>
+		<div class="trm-menu-btn">
+			<span></span>
+		</div>
+	</div>
+</header>
+            <!-- top bar end -->
+
+            <!-- body -->
+            
+<div class="trm-content-start">
+    <!-- banner -->
+    <div class="trm-banner">
+    
+    <!-- banner cover -->
+    <img style="object-position:top;object-fit:cover;" alt="banner" class="trm-banner-cover" src="/img/banner.png">
+    <!-- banner cover end -->
+    
+
+    <!-- banner content -->
+    <div class="trm-banner-content trm-overlay">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-4"></div>
+                
+                <div class="col-lg-8">
+
+                    <!-- banner title -->
+                    <div class="trm-banner-text ">
+                        <div class="trm-label trm-mb-20">
+                            NEWS LETTER
+                        </div>
+                        <h1 class="trm-mb-30 trm-hsmb-font">
+                            用Claude 3.5 Sonnet提升SWE-bench Verified标准
+                        </h1>
+
+                        
+                            <ul class="trm-breadcrumbs trm-label">
+                                <li>
+                                    <a href="/" class="trm-anima-link">Home</a>
+                                </li>
+                                <li>
+                                    <span>
+                                        2026
+                                    </span>
+                                </li>
+                            </ul>
+                        
+                    </div>
+                    <!-- banner title end -->
+
+                    <!-- scroll hint -->
+                    <span id="scroll-triger" class="trm-scroll-hint-frame">
+                        <div class="trm-scroll-hint"></div>
+                        <span class="trm-label">Scroll down</span>
+                    </span>
+                    <!-- scroll hint end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- banner content end -->
+</div>
+    <!-- banner end -->
+    <div class="container">
+        <div class="row">
+            
+                <div class="trm-page-sidebar col-lg-4 hidden-sm">
+                    <!-- main card -->
+                    <div class="trm-main-card-frame trm-sidebar">
+    <div class="trm-main-card"> 
+        <!-- card header -->
+<div class="trm-mc-header">
+    <div class="trm-avatar-frame trm-mb-20">
+        <img alt="Avatar" class="trm-avatar" src="/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png">
+    </div>
+    <h5 class="trm-name trm-mb-15">
+        EASY
+    </h5>
+    
+</div>
+<!-- card header end -->
+        <!-- sidebar social -->
+
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<div class="trm-social">
+    
+        <a href="https://github.com" title="Github" rel="nofollow" target="_blank">
+            <i class="iconfont fab fa-github"></i>
+        </a>
+    
+</div>
+
+<!-- sidebar social end -->
+        <!-- info -->
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<ul class="trm-table trm-mb-20">
+    
+        <li>
+            <div class="trm-label">
+                Residence:
+            </div>
+            <div class="trm-label trm-label-light">
+                Mars
+            </div>
+        </li>
+    
+</ul>
+<!-- info end -->
+
+        
+    <div class="trm-divider trm-mb-40 trm-mt-40"></div>
+    <!-- action button -->
+    <div class="text-center">
+        <a href="mailto:easy2022163@163.com" class="trm-btn">
+            联系我
+            <i class="iconfont far fa-envelope"></i>
+        </a>
+    </div>
+    <!-- action button end -->
+
+    </div>
+</div>
+                    <!-- main card end -->
+                </div>
+            
+            <div class="trm-page-content col-lg-8">
+                <div id="trm-content" class="trm-content">
+                    <div class="trm-post-info row hidden-sm">
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-calendar-alt trm-icon"></i><br>
+            01/06
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-clock trm-icon"></i><br>
+            17:10
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div id="post-author" class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-user trm-icon"></i><br>
+            easy
+        </div>
+    </div>
+</div>
+<div class="trm-card ">
+    <article id="article-container" class="trm-publication">
+    <p><strong>英文标题</strong>: Raising the bar on SWE-bench Verified with Claude 3.5 Sonnet</p>
+<p><strong>原文链接</strong>: <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/swe-bench-sonnet">https://www.anthropic.com/engineering/swe-bench-sonnet</a></p>
+<p>我们很高兴分享Claude 3.5 Sonnet在SWE-bench Verified上的新最先进结果，这是一个评估AI系统解决真实GitHub问题的基准测试。</p>
+<h2 id="什么是SWE-bench-Verified？"><a href="#什么是SWE-bench-Verified？" class="headerlink" title="什么是SWE-bench Verified？"></a>什么是SWE-bench Verified？</h2><p>SWE-bench Verified是SWE-bench的一个子集，包含：</p>
+<ul>
+<li>500个真实世界的GitHub问题</li>
+<li>来自流行的Python仓库</li>
+<li>经过人工验证的问题描述</li>
+<li>可靠的测试用例</li>
+</ul>
+<h2 id="我们的结果"><a href="#我们的结果" class="headerlink" title="我们的结果"></a>我们的结果</h2><p>Claude 3.5 Sonnet在SWE-bench Verified上实现了：</p>
+<ul>
+<li><strong>56%</strong> 的问题解决率</li>
+<li>比之前的最先进水平提高10%</li>
+<li>在多个类别中表现强劲</li>
+</ul>
+<h2 id="关键创新"><a href="#关键创新" class="headerlink" title="关键创新"></a>关键创新</h2><h3 id="1-改进的代码理解"><a href="#1-改进的代码理解" class="headerlink" title="1. 改进的代码理解"></a>1. 改进的代码理解</h3><p>Claude 3.5 Sonnet展示了：</p>
+<ul>
+<li>更好的代码库导航</li>
+<li>改进的上下文理解</li>
+<li>更强的错误诊断</li>
+<li>更有效的调试</li>
+</ul>
+<h3 id="2-增强的规划"><a href="#2-增强的规划" class="headerlink" title="2. 增强的规划"></a>2. 增强的规划</h3><p>更复杂的计划能力：</p>
+<ul>
+<li>多步骤推理</li>
+<li>依赖关系识别</li>
+<li>风险评估</li>
+<li>替代方案考虑</li>
+</ul>
+<h3 id="3-更好的工具使用"><a href="#3-更好的工具使用" class="headerlink" title="3. 更好的工具使用"></a>3. 更好的工具使用</h3><p>更有效地使用工具：</p>
+<ul>
+<li>更精确的搜索</li>
+<li>更好的文件操作</li>
+<li>改进的测试执行</li>
+<li>更智能的上下文管理</li>
+</ul>
+<h2 id="技术方法"><a href="#技术方法" class="headerlink" title="技术方法"></a>技术方法</h2><h3 id="智能体架构"><a href="#智能体架构" class="headerlink" title="智能体架构"></a>智能体架构</h3><p>我们的方法使用：</p>
+<ul>
+<li>多步骤规划</li>
+<li>迭代执行</li>
+<li>持续验证</li>
+<li>错误恢复</li>
+</ul>
+<h3 id="关键组件"><a href="#关键组件" class="headerlink" title="关键组件"></a>关键组件</h3><ol>
+<li><p><strong>问题理解</strong></p>
+<ul>
+<li>分析问题描述</li>
+<li>识别相关代码</li>
+<li>理解预期行为</li>
+</ul>
+</li>
+<li><p><strong>代码探索</strong></p>
+<ul>
+<li>导航代码库</li>
+<li>找到相关文件</li>
+<li>理解代码结构</li>
+</ul>
+</li>
+<li><p><strong>解决方案生成</strong></p>
+<ul>
+<li>制定修复方案</li>
+<li>实施更改</li>
+<li>验证解决方案</li>
+</ul>
+</li>
+<li><p><strong>测试验证</strong></p>
+<ul>
+<li>运行测试套件</li>
+<li>检查回归</li>
+<li>验证修复</li>
+</ul>
+</li>
+</ol>
+<h2 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h2><h3 id="按问题类型"><a href="#按问题类型" class="headerlink" title="按问题类型"></a>按问题类型</h3><p>不同类别的问题解决率：</p>
+<ul>
+<li>错误修复：<strong>62%</strong></li>
+<li>功能添加：<strong>48%</strong></li>
+<li>重构：<strong>55%</strong></li>
+<li>文档：<strong>70%</strong></li>
+</ul>
+<h3 id="按复杂度"><a href="#按复杂度" class="headerlink" title="按复杂度"></a>按复杂度</h3><p>不同复杂度级别：</p>
+<ul>
+<li>简单问题：<strong>75%</strong></li>
+<li>中等问题：<strong>52%</strong></li>
+<li>复杂问题：<strong>38%</strong></li>
+</ul>
+<h2 id="与之前版本的比较"><a href="#与之前版本的比较" class="headerlink" title="与之前版本的比较"></a>与之前版本的比较</h2><h3 id="Claude-3-Opus"><a href="#Claude-3-Opus" class="headerlink" title="Claude 3 Opus"></a>Claude 3 Opus</h3><ul>
+<li>之前：46%</li>
+<li>现在：56%</li>
+<li>提升：10个百分点</li>
+</ul>
+<h3 id="关键改进领域"><a href="#关键改进领域" class="headerlink" title="关键改进领域"></a>关键改进领域</h3><ol>
+<li><p><strong>代码导航</strong></p>
+<ul>
+<li>更快找到相关代码</li>
+<li>更好地理解代码结构</li>
+<li>减少错误路径</li>
+</ul>
+</li>
+<li><p><strong>错误处理</strong></p>
+<ul>
+<li>更好的错误诊断</li>
+<li>更有效的恢复</li>
+<li>更少的死胡同</li>
+</ul>
+</li>
+<li><p><strong>测试理解</strong></p>
+<ul>
+<li>更好地理解测试意图</li>
+<li>更准确的验证</li>
+<li>减少误报</li>
+</ul>
+</li>
+</ol>
+<h2 id="实际影响"><a href="#实际影响" class="headerlink" title="实际影响"></a>实际影响</h2><h3 id="开发者生产力"><a href="#开发者生产力" class="headerlink" title="开发者生产力"></a>开发者生产力</h3><p>这些改进意味着：</p>
+<ul>
+<li>更快的错误修复</li>
+<li>更高效的重构</li>
+<li>更好的代码维护</li>
+<li>改进的代码审查</li>
+</ul>
+<h3 id="AI辅助编码"><a href="#AI辅助编码" class="headerlink" title="AI辅助编码"></a>AI辅助编码</h3><p>为AI辅助编码工具设定新标准：</p>
+<ul>
+<li>更可靠的代码生成</li>
+<li>更好的上下文理解</li>
+<li>更有效的调试</li>
+<li>改进的代码审查</li>
+</ul>
+<h2 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h2><h3 id="当前挑战"><a href="#当前挑战" class="headerlink" title="当前挑战"></a>当前挑战</h3><p>仍有改进空间：</p>
+<ul>
+<li>复杂架构问题</li>
+<li>跨文件依赖</li>
+<li>微妙的行为更改</li>
+<li>性能优化</li>
+</ul>
+<h3 id="未来工作"><a href="#未来工作" class="headerlink" title="未来工作"></a>未来工作</h3><p>我们正在努力：</p>
+<ul>
+<li>进一步提高性能</li>
+<li>扩展到更多语言</li>
+<li>处理更复杂的问题</li>
+<li>减少计算成本</li>
+</ul>
+<h2 id="社区影响"><a href="#社区影响" class="headerlink" title="社区影响"></a>社区影响</h2><h3 id="开源贡献"><a href="#开源贡献" class="headerlink" title="开源贡献"></a>开源贡献</h3><p>我们计划：</p>
+<ul>
+<li>分享我们的方法</li>
+<li>开源评估工具</li>
+<li>贡献基准测试改进</li>
+<li>支持研究社区</li>
+</ul>
+<h3 id="行业应用"><a href="#行业应用" class="headerlink" title="行业应用"></a>行业应用</h3><p>这些进步支持：</p>
+<ul>
+<li>更好的开发工具</li>
+<li>改进的代码审查</li>
+<li>自动化维护</li>
+<li>增强的学习</li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>Claude 3.5 Sonnet在SWE-bench Verified上的结果展示了AI辅助软件工程的重大进步。随着我们继续改进，我们期待AI系统能够处理越来越复杂的开发任务。</p>
+<hr>
+<p><em>原文发布于 Anthropic Engineering Blog</em></p>
+<p><em>原文链接: <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/swe-bench-sonnet">https://www.anthropic.com/engineering/swe-bench-sonnet</a></em></p>
+
+</article>
+    
+    
+
+</div>
+<div class="trm-post-next-prev row">
+    <div class="col-lg-12">
+        <!-- title -->
+        <h5 class="trm-title-with-divider">
+            其他文章
+            <span data-number="02"></span>
+        </h5>
+    </div>
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
+            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/06/12_%E6%A1%8C%E9%9D%A2%E6%89%A9%E5%B1%95_Claude_Desktop%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85MCP%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">桌面扩展：Claude Desktop一键安装MCP服务器</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/06</li>
+                <li>17:10</li>
+                <li>文章转载</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
+            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/06/easy/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">从对话到执行：深入浅出 AI Agent 的现状与思考</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/06</li>
+                <li>17:10</li>
+                <li>AI AGENT</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+</div>
+
+    
+
+
+
+                    <div class="trm-divider footer-divider"></div>
+
+                    <!-- footer -->
+                    <footer class="trm-footer-card trm-scroll-animation">
+
+    
+
+    
+
+    
+        <div class="trm-footer-item">
+            <span>
+                由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1
+            </span>
+            <span class="footer-separator" data-separator=" | "></span>
+            <span> 
+                主题 - 
+                <a rel="noopener" href='https://github.com/MaLuns/hexo-theme-async' target='_blank'>Async</a>
+                v2.2.7
+            </span>
+        </div>
+      
+
+     
+
+     
+</footer>
+                    <!-- footer end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- body end -->
+
+            
+
+            
+<div class="trm-fixed-container">
+    
+    
+        <div class="trm-fixed-btn" data-title="阅读模式" onclick="asyncFun.switchReadMode()">
+            <i class="iconfont fas fa-book-reader"></i>
+        </div>
+    
+    
+    <div id="trm-back-top" class="trm-fixed-btn" data-title="回到顶部">
+        <i class="iconfont fas fa-arrow-up"></i>
+    </div>
+</div>
+        </div>
+      </div>
+      <!-- scroll container end -->
+  </div>
+  <!-- app wrapper end -->
+
+  
+    <div class="trm-search-popup">
+        <div class="trm-search-wrapper">
+            <div class="form trm-search-form">
+                <div class="trm-search-input-icon">
+                    <i class="iconfont fas fa-search"></i>
+                </div>
+                <input class="trm-search-input" type="text" placeholder="搜索文章...">
+                <div class="trm-search-btn-close">
+                    <i class="iconfont fas fa-times"></i>
+                </div>
+            </div>
+            <div class="trm-search-result-container">
+                <div class="trm-search-empty">
+                    请输入关键词进行搜索
+                </div>
+            </div>
+            <div class="trm-search-footer">
+                <div class="trm-search-stats"></div>
+                <ul class="trm-search-commands">
+                    <li>
+                        <kbd class="command-palette-commands-key">
+                            <svg width="15" height="15" aria-label="Escape key" role="img">
+                                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="1.2">
+                                    <path
+                                        d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956">
+                                    </path>
+                                </g>
+                            </svg>
+                        </kbd>
+                        <span class="command-palette-Label">to close</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+  <!-- Plugin -->
+
+
+
+
+    
+    
+<script src="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+
+    
+
+    
+
+    
+        
+<script src="https://unpkg.com/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+
+        <script src="https://unpkg.com/hexo-theme-async@2.2.7/source/js/plugins/local_search.js?v=2.2.7"></script>
+    
+
+    <!-- 数学公式 -->
+    
+
+    <!-- 评论插件 -->
+    
+        
+
+        
+    
+
+		
+
+
+
+
+    <!-- Service Worker -->
+    
+    <!-- baidu push -->
+    
+
+
+<script id="async-script" src="https://unpkg.com/hexo-theme-async@2.2.7/source/js/main.js?v=2.2.7"></script>
+
+<!-- CDN -->
+
+
+    
+
+    
+
+    
+
+
+
+</body>
+
+</html>

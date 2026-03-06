@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-Hans,default">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="x5-fullscreen" content="true">
+<meta name="full-screen" content="yes">
+<meta name="theme-color" content="#317EFB" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" name="viewport">
+<meta name="description" content="英文标题: Effective harnesses for long-running agents 原文链接: https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;effective-harnesses-for-long-running-agents 构建能够在没有人工干预的情况下长时间运行的智能体需要仔细设计框架。这些框架必须处理错误、管理资源并保持进度。 在这篇文章中，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="长时运行智能体的有效框架">
+<meta property="og:url" content="http://example.com/2026/01/06/05_%E9%95%BF%E6%97%B6%E8%BF%90%E8%A1%8C%E6%99%BA%E8%83%BD%E4%BD%93%E7%9A%84%E6%9C%89%E6%95%88%E6%A1%86%E6%9E%B6/index.html">
+<meta property="og:site_name" content="easy-box">
+<meta property="og:description" content="英文标题: Effective harnesses for long-running agents 原文链接: https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;effective-harnesses-for-long-running-agents 构建能够在没有人工干预的情况下长时间运行的智能体需要仔细设计框架。这些框架必须处理错误、管理资源并保持进度。 在这篇文章中，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-06T09:10:16.000Z">
+<meta property="article:modified_time" content="2026-03-06T08:39:35.755Z">
+<meta property="article:author" content="easy">
+<meta property="article:tag" content="AGENT">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+
+
+<title >长时运行智能体的有效框架</title>
+
+<!-- Favicon -->
+
+    <link href='/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png?v=2.2.7' rel='icon' type='image/png' sizes='16x16' ></link>
+
+
+    <link href='/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png?v=2.2.7' rel='icon' type='image/png' sizes='32x32' ></link>
+
+
+
+    <link href='/site.webmanifest' rel='manifest' ></link>
+
+
+<!-- Plugin -->
+
+
+
+
+    
+<link rel="stylesheet" href="https://unpkg.com/hexo-theme-async@2.2.7/source/css/plugins/bootstrap.row.css">
+
+    
+<link rel="stylesheet" href="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.css">
+
+    
+    
+
+
+
+
+<!-- Icon -->
+
+    
+<link rel="stylesheet" href="/css/plugins/font-awesome.min.css">
+
+
+
+
+<!-- Variable -->
+<script>window.ASYNC_CONFIG = {"hostname":"example.com","author":"easy","root":"/","typed_text":null,"theme_version":"2.2.7","theme":{"switch":true,"default":"auto","animation":true},"favicon":{"logo":"/img/编程兔子_compressed.png","icon16":"/img/编程兔子_compressed.png","icon32":"/img/编程兔子_compressed.png","apple_touch_icon":null,"webmanifest":"/site.webmanifest","visibilitychange":true,"hidden":"failure.ico","show_text":"(/≧▽≦/)咦！又好了！","hide_text":"(●—●)喔哟，崩溃啦！"},"i18n":{"placeholder":"搜索文章...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）","author":"本文作者：","copyright_link":"本文链接：","copyright_license_title":"版权声明：","copyright_license_content":"本博客所有文章除特别声明外，均默认采用 undefined 许可协议。","copy_success":"复制成功","copy_failure":"复制失败","open_read_mode":"进入阅读模式","exit_read_mode":"退出阅读模式","notice_outdate_message":"距离上次更新已经 undefined 天了, 文章内容可能已经过时。","sticky":"置顶","just":"刚刚","min":"分钟前","hour":"小时前","day":"天前","month":"个月前"},"swup":false,"plugin":{"flickr_justified_gallery":"https://unpkg.com/flickr-justified-gallery@latest/dist/fjGallery.min.js"},"icons":{"sun":"far fa-sun","moon":"far fa-moon","play":"fas fa-play","email":"far fa-envelope","next":"fas fa-arrow-right","calendar":"far fa-calendar-alt","clock":"far fa-clock","user":"far fa-user","back_top":"fas fa-arrow-up","close":"fas fa-times","search":"fas fa-search","reward":"fas fa-hand-holding-usd","toc_tag":"fas fa-th-list","read":"fas fa-book-reader","arrows":"fas fa-arrows-alt-h","double_arrows":"fas fa-angle-double-down","copy":"fas fa-copy"},"icontype":"font","highlight":{"plugin":"highlighjs","theme":true,"copy":true,"lang":true,"title":"default","height_limit":false},"toc":{"post_title":true},"live_time":{"start_time":"","prefix":"博客已萌萌哒运行 undefined 天"},"danmu":{"enable":false,"el":".trm-banner"},"creative_commons":{"license":"by-nc-sa","language":"deed.zh-hans"},"search":{"enable":true,"type":"local","href":"https://www.google.com/search?q=site:","domain":null}};</script>
+<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2026-03-06 16:39:35"};</script>
+
+<!-- Theme mode css -->
+<link data-swup-theme rel="stylesheet" href="/css/index.css?v=2.2.7" id="trm-switch-style">
+<script>
+    let defaultMode = ASYNC_CONFIG.theme.default !=='auto' ?  ASYNC_CONFIG.theme.default : (window.matchMedia("(prefers-color-scheme: light)").matches ? 'style-light' : 'style-dark')
+    let catchMode = localStorage.getItem('theme-mode') || defaultMode;
+    let type = catchMode === 'style-dark' ? 'add' : 'remove';
+    document.documentElement.classList[type]('dark')
+</script>
+
+<!-- CDN -->
+
+
+    
+    
+
+
+
+<!-- Site Analytics -->
+
+ 
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+  <!-- app wrapper -->
+  <div class="trm-app-frame">
+
+    <!-- page preloader -->
+    <div class="trm-preloader">
+    <div class="trm-holder">
+        <div class="preloader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+    <!-- page preloader end -->
+
+    <!-- change mode preloader -->
+    <div class="trm-mode-swich-animation-frame">
+    <div class="trm-mode-swich-animation">
+        <i class="i-sun"><i class="iconfont far fa-sun"></i></i>
+        <div class="trm-horizon"></div>
+        <i class="i-moon"><i class="iconfont far fa-moon"></i></i>
+    </div>
+</div>
+    <!-- change mode preloader end -->
+
+      <!-- scroll container -->
+      <div id="trm-dynamic-content" class="trm-swup-animation">
+        <div id="trm-scroll-container" class="trm-scroll-container" style="opacity: 0">
+            <!-- top bar -->
+            <header class="trm-top-bar">
+	<div class="container">
+		<div class="trm-left-side">
+			<!-- logo -->
+<a href="/" class="trm-logo-frame trm-anima-link">
+    
+        <img alt="logo" src="/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png">
+    
+    
+        <div class="trm-logo-text">
+            Easy-Box<span></span>
+        </div>
+    
+</a>
+<!-- logo end -->
+		</div>
+		<div class="trm-right-side">
+			<!-- menu -->
+<div class="trm-menu">
+    <nav>
+        <ul>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/" target="">
+                    首页
+                </a>
+                
+            </li>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/archives/" target="">
+                    归档
+                </a>
+                
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+<!-- menu end -->
+			
+    <!-- mode switcher place -->
+    <div class="trm-mode-switcher-place">
+        <div class="trm-mode-switcher">
+            <i class="iconfont far fa-sun"></i>
+            <input class="tgl tgl-light" id="trm-swich" type="checkbox">
+            <label class="trm-swich" for="trm-swich"></label>
+            <i class="iconfont far fa-moon"></i>
+        </div>
+    </div>
+    <!-- mode switcher place end -->
+
+			
+    
+    <div id="trm-search-btn" class="trm-search-btn">
+        <i class="iconfont fas fa-search"></i>
+    </div>
+     
+
+		</div>
+		<div class="trm-menu-btn">
+			<span></span>
+		</div>
+	</div>
+</header>
+            <!-- top bar end -->
+
+            <!-- body -->
+            
+<div class="trm-content-start">
+    <!-- banner -->
+    <div class="trm-banner">
+    
+    <!-- banner cover -->
+    <img style="object-position:top;object-fit:cover;" alt="banner" class="trm-banner-cover" src="/img/banner.png">
+    <!-- banner cover end -->
+    
+
+    <!-- banner content -->
+    <div class="trm-banner-content trm-overlay">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-4"></div>
+                
+                <div class="col-lg-8">
+
+                    <!-- banner title -->
+                    <div class="trm-banner-text ">
+                        <div class="trm-label trm-mb-20">
+                            NEWS LETTER
+                        </div>
+                        <h1 class="trm-mb-30 trm-hsmb-font">
+                            长时运行智能体的有效框架
+                        </h1>
+
+                        
+                            <ul class="trm-breadcrumbs trm-label">
+                                <li>
+                                    <a href="/" class="trm-anima-link">Home</a>
+                                </li>
+                                <li>
+                                    <span>
+                                        2026
+                                    </span>
+                                </li>
+                            </ul>
+                        
+                    </div>
+                    <!-- banner title end -->
+
+                    <!-- scroll hint -->
+                    <span id="scroll-triger" class="trm-scroll-hint-frame">
+                        <div class="trm-scroll-hint"></div>
+                        <span class="trm-label">Scroll down</span>
+                    </span>
+                    <!-- scroll hint end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- banner content end -->
+</div>
+    <!-- banner end -->
+    <div class="container">
+        <div class="row">
+            
+                <div class="trm-page-sidebar col-lg-4 hidden-sm">
+                    <!-- main card -->
+                    <div class="trm-main-card-frame trm-sidebar">
+    <div class="trm-main-card"> 
+        <!-- card header -->
+<div class="trm-mc-header">
+    <div class="trm-avatar-frame trm-mb-20">
+        <img alt="Avatar" class="trm-avatar" src="/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png">
+    </div>
+    <h5 class="trm-name trm-mb-15">
+        EASY
+    </h5>
+    
+</div>
+<!-- card header end -->
+        <!-- sidebar social -->
+
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<div class="trm-social">
+    
+        <a href="https://github.com" title="Github" rel="nofollow" target="_blank">
+            <i class="iconfont fab fa-github"></i>
+        </a>
+    
+</div>
+
+<!-- sidebar social end -->
+        <!-- info -->
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<ul class="trm-table trm-mb-20">
+    
+        <li>
+            <div class="trm-label">
+                Residence:
+            </div>
+            <div class="trm-label trm-label-light">
+                Mars
+            </div>
+        </li>
+    
+</ul>
+<!-- info end -->
+
+        
+    <div class="trm-divider trm-mb-40 trm-mt-40"></div>
+    <!-- action button -->
+    <div class="text-center">
+        <a href="mailto:easy2022163@163.com" class="trm-btn">
+            联系我
+            <i class="iconfont far fa-envelope"></i>
+        </a>
+    </div>
+    <!-- action button end -->
+
+    </div>
+</div>
+                    <!-- main card end -->
+                </div>
+            
+            <div class="trm-page-content col-lg-8">
+                <div id="trm-content" class="trm-content">
+                    <div class="trm-post-info row hidden-sm">
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-calendar-alt trm-icon"></i><br>
+            01/06
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-clock trm-icon"></i><br>
+            17:10
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div id="post-author" class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-user trm-icon"></i><br>
+            easy
+        </div>
+    </div>
+</div>
+<div class="trm-card ">
+    <article id="article-container" class="trm-publication">
+    <p><strong>英文标题</strong>: Effective harnesses for long-running agents</p>
+<p><strong>原文链接</strong>: <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents</a></p>
+<p>构建能够在没有人工干预的情况下长时间运行的智能体需要仔细设计框架。这些框架必须处理错误、管理资源并保持进度。</p>
+<p>在这篇文章中，我们分享我们在构建长时运行智能体框架方面的经验。</p>
+<h2 id="什么是智能体框架？"><a href="#什么是智能体框架？" class="headerlink" title="什么是智能体框架？"></a>什么是智能体框架？</h2><p>智能体框架是管理智能体执行的软件基础设施。它：</p>
+<ul>
+<li>启动和停止智能体</li>
+<li>管理智能体状态</li>
+<li>处理错误和恢复</li>
+<li>提供工具和资源</li>
+</ul>
+<h2 id="长时运行智能体的挑战"><a href="#长时运行智能体的挑战" class="headerlink" title="长时运行智能体的挑战"></a>长时运行智能体的挑战</h2><h3 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h3><p>智能体在长时间运行期间会遇到错误：</p>
+<ul>
+<li>API故障</li>
+<li>资源耗尽</li>
+<li>超时</li>
+<li>意外状态</li>
+</ul>
+<h3 id="状态管理"><a href="#状态管理" class="headerlink" title="状态管理"></a>状态管理</h3><p>保持状态一致性很重要：</p>
+<ul>
+<li>持久化状态</li>
+<li>恢复状态</li>
+<li>处理并发</li>
+<li>避免状态漂移</li>
+</ul>
+<h3 id="资源管理"><a href="#资源管理" class="headerlink" title="资源管理"></a>资源管理</h3><p>智能体消耗资源：</p>
+<ul>
+<li>API调用成本</li>
+<li>内存使用</li>
+<li>存储空间</li>
+<li>计算时间</li>
+</ul>
+<h2 id="框架设计原则"><a href="#框架设计原则" class="headerlink" title="框架设计原则"></a>框架设计原则</h2><h3 id="1-健壮的错误处理"><a href="#1-健壮的错误处理" class="headerlink" title="1. 健壮的错误处理"></a>1. 健壮的错误处理</h3><p>优雅地处理故障：</p>
+<ul>
+<li>重试失败的调用</li>
+<li>实施断路器</li>
+<li>记录错误</li>
+<li>通知操作员</li>
+</ul>
+<h3 id="2-状态持久化"><a href="#2-状态持久化" class="headerlink" title="2. 状态持久化"></a>2. 状态持久化</h3><p>确保状态在故障中幸存：</p>
+<ul>
+<li>定期保存状态</li>
+<li>使用事务更新</li>
+<li>实现检查点</li>
+<li>支持恢复</li>
+</ul>
+<h3 id="3-资源限制"><a href="#3-资源限制" class="headerlink" title="3. 资源限制"></a>3. 资源限制</h3><p>防止资源耗尽：</p>
+<ul>
+<li>设置API调用限制</li>
+<li>监控内存使用</li>
+<li>实施超时</li>
+<li>控制并发</li>
+</ul>
+<h3 id="4-可观察性"><a href="#4-可观察性" class="headerlink" title="4. 可观察性"></a>4. 可观察性</h3><p>了解智能体在做什么：</p>
+<ul>
+<li>记录所有操作</li>
+<li>跟踪性能指标</li>
+<li>提供仪表板</li>
+<li>设置警报</li>
+</ul>
+<h2 id="实施模式"><a href="#实施模式" class="headerlink" title="实施模式"></a>实施模式</h2><h3 id="循环模式"><a href="#循环模式" class="headerlink" title="循环模式"></a>循环模式</h3><p>基本执行循环：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">while running:</span><br><span class="line">    task = get_next_task()</span><br><span class="line">    result = execute(task)</span><br><span class="line">    save_state()</span><br><span class="line">    handle_errors()</span><br></pre></td></tr></table></figure>
+
+<h3 id="事件驱动模式"><a href="#事件驱动模式" class="headerlink" title="事件驱动模式"></a>事件驱动模式</h3><p>响应事件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">on_event(event):</span><br><span class="line">    update_state(event)</span><br><span class="line">    trigger_actions()</span><br><span class="line">    persist_changes()</span><br></pre></td></tr></table></figure>
+
+<h3 id="管道模式"><a href="#管道模式" class="headerlink" title="管道模式"></a>管道模式</h3><p>处理数据流：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">input → process → transform → output</span><br><span class="line">         ↑___________________↓</span><br><span class="line">              (feedback loop)</span><br></pre></td></tr></table></figure>
+
+<h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><h3 id="从小处开始"><a href="#从小处开始" class="headerlink" title="从小处开始"></a>从小处开始</h3><p>从简单的框架开始：</p>
+<ul>
+<li>基本循环</li>
+<li>简单状态管理</li>
+<li>最小错误处理</li>
+<li>逐步添加复杂性</li>
+</ul>
+<h3 id="测试一切"><a href="#测试一切" class="headerlink" title="测试一切"></a>测试一切</h3><p>彻底测试你的框架：</p>
+<ul>
+<li>单元测试</li>
+<li>集成测试</li>
+<li>混沌测试</li>
+<li>负载测试</li>
+</ul>
+<h3 id="监控生产"><a href="#监控生产" class="headerlink" title="监控生产"></a>监控生产</h3><p>在生产中跟踪性能：</p>
+<ul>
+<li>错误率</li>
+<li>延迟</li>
+<li>资源使用</li>
+<li>成功率</li>
+</ul>
+<h3 id="优雅地失败"><a href="#优雅地失败" class="headerlink" title="优雅地失败"></a>优雅地失败</h3><p>当事情出错时：</p>
+<ul>
+<li>保存状态</li>
+<li>记录问题</li>
+<li>通知操作员</li>
+<li>尝试恢复</li>
+</ul>
+<h2 id="案例研究"><a href="#案例研究" class="headerlink" title="案例研究"></a>案例研究</h2><h3 id="研究智能体"><a href="#研究智能体" class="headerlink" title="研究智能体"></a>研究智能体</h3><p>我们的研究智能体框架：</p>
+<ul>
+<li>运行数小时</li>
+<li>处理数千个任务</li>
+<li>管理复杂状态</li>
+<li>从错误中恢复</li>
+</ul>
+<h3 id="代码生成智能体"><a href="#代码生成智能体" class="headerlink" title="代码生成智能体"></a>代码生成智能体</h3><p>我们的代码生成框架：</p>
+<ul>
+<li>并行处理多个文件</li>
+<li>管理依赖关系</li>
+<li>验证输出</li>
+<li>处理边缘情况</li>
+</ul>
+<h2 id="工具和技术"><a href="#工具和技术" class="headerlink" title="工具和技术"></a>工具和技术</h2><h3 id="状态存储"><a href="#状态存储" class="headerlink" title="状态存储"></a>状态存储</h3><ul>
+<li>数据库</li>
+<li>文件系统</li>
+<li>分布式存储</li>
+<li>缓存</li>
+</ul>
+<h3 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h3><ul>
+<li>任务分发</li>
+<li>事件处理</li>
+<li>负载均衡</li>
+<li>背压处理</li>
+</ul>
+<h3 id="监控"><a href="#监控" class="headerlink" title="监控"></a>监控</h3><ul>
+<li>日志聚合</li>
+<li>指标收集</li>
+<li>分布式跟踪</li>
+<li>警报系统</li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>构建长时运行智能体的有效框架需要仔细关注错误处理、状态管理、资源限制和可观察性。通过遵循这些原则，你可以创建能够可靠地长时间运行的智能体系统。</p>
+<hr>
+<p><em>原文发布于 Anthropic Engineering Blog</em></p>
+<p><em>原文链接: <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents">https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents</a></em></p>
+
+</article>
+    
+    
+
+</div>
+<div class="trm-post-next-prev row">
+    <div class="col-lg-12">
+        <!-- title -->
+        <h5 class="trm-title-with-divider">
+            其他文章
+            <span data-number="02"></span>
+        </h5>
+    </div>
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
+            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/06/06_Claude%E5%BC%80%E5%8F%91%E8%80%85%E5%B9%B3%E5%8F%B0%E9%AB%98%E7%BA%A7%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">Claude开发者平台高级工具使用介绍</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/06</li>
+                <li>17:10</li>
+                <li>文章转载</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
+            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/06/11_%E7%94%A8%E6%99%BA%E8%83%BD%E4%BD%93%E7%BC%96%E5%86%99%E6%9C%89%E6%95%88%E7%9A%84%E6%99%BA%E8%83%BD%E4%BD%93%E5%B7%A5%E5%85%B7/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">用智能体编写有效的智能体工具</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/06</li>
+                <li>17:10</li>
+                <li>文章转载</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+</div>
+
+    
+
+
+
+                    <div class="trm-divider footer-divider"></div>
+
+                    <!-- footer -->
+                    <footer class="trm-footer-card trm-scroll-animation">
+
+    
+
+    
+
+    
+        <div class="trm-footer-item">
+            <span>
+                由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1
+            </span>
+            <span class="footer-separator" data-separator=" | "></span>
+            <span> 
+                主题 - 
+                <a rel="noopener" href='https://github.com/MaLuns/hexo-theme-async' target='_blank'>Async</a>
+                v2.2.7
+            </span>
+        </div>
+      
+
+     
+
+     
+</footer>
+                    <!-- footer end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- body end -->
+
+            
+
+            
+<div class="trm-fixed-container">
+    
+    
+        <div class="trm-fixed-btn" data-title="阅读模式" onclick="asyncFun.switchReadMode()">
+            <i class="iconfont fas fa-book-reader"></i>
+        </div>
+    
+    
+    <div id="trm-back-top" class="trm-fixed-btn" data-title="回到顶部">
+        <i class="iconfont fas fa-arrow-up"></i>
+    </div>
+</div>
+        </div>
+      </div>
+      <!-- scroll container end -->
+  </div>
+  <!-- app wrapper end -->
+
+  
+    <div class="trm-search-popup">
+        <div class="trm-search-wrapper">
+            <div class="form trm-search-form">
+                <div class="trm-search-input-icon">
+                    <i class="iconfont fas fa-search"></i>
+                </div>
+                <input class="trm-search-input" type="text" placeholder="搜索文章...">
+                <div class="trm-search-btn-close">
+                    <i class="iconfont fas fa-times"></i>
+                </div>
+            </div>
+            <div class="trm-search-result-container">
+                <div class="trm-search-empty">
+                    请输入关键词进行搜索
+                </div>
+            </div>
+            <div class="trm-search-footer">
+                <div class="trm-search-stats"></div>
+                <ul class="trm-search-commands">
+                    <li>
+                        <kbd class="command-palette-commands-key">
+                            <svg width="15" height="15" aria-label="Escape key" role="img">
+                                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="1.2">
+                                    <path
+                                        d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956">
+                                    </path>
+                                </g>
+                            </svg>
+                        </kbd>
+                        <span class="command-palette-Label">to close</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+  <!-- Plugin -->
+
+
+
+
+    
+    
+<script src="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+
+    
+
+    
+
+    
+        
+<script src="https://unpkg.com/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+
+        <script src="https://unpkg.com/hexo-theme-async@2.2.7/source/js/plugins/local_search.js?v=2.2.7"></script>
+    
+
+    <!-- 数学公式 -->
+    
+
+    <!-- 评论插件 -->
+    
+        
+
+        
+    
+
+		
+
+
+
+
+    <!-- Service Worker -->
+    
+    <!-- baidu push -->
+    
+
+
+<script id="async-script" src="https://unpkg.com/hexo-theme-async@2.2.7/source/js/main.js?v=2.2.7"></script>
+
+<!-- CDN -->
+
+
+    
+
+    
+
+    
+
+
+
+</body>
+
+</html>

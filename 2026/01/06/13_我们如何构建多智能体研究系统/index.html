@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN,zh-Hans,default">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="x5-fullscreen" content="true">
+<meta name="full-screen" content="yes">
+<meta name="theme-color" content="#317EFB" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=0" name="viewport">
+<meta name="description" content="英文标题: How we built our multi-agent research system 原文链接: https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;multi-agent-research-system Claude现在具有研究功能，允许它跨网络、Google Workspace和任何集成进行搜索，以完成复杂任务。 这个多智能体系统从原型到生产的旅程教会了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我们如何构建多智能体研究系统">
+<meta property="og:url" content="http://example.com/2026/01/06/13_%E6%88%91%E4%BB%AC%E5%A6%82%E4%BD%95%E6%9E%84%E5%BB%BA%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%A0%94%E7%A9%B6%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="easy-box">
+<meta property="og:description" content="英文标题: How we built our multi-agent research system 原文链接: https:&#x2F;&#x2F;www.anthropic.com&#x2F;engineering&#x2F;multi-agent-research-system Claude现在具有研究功能，允许它跨网络、Google Workspace和任何集成进行搜索，以完成复杂任务。 这个多智能体系统从原型到生产的旅程教会了">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-06T09:10:16.000Z">
+<meta property="article:modified_time" content="2026-03-06T08:40:50.520Z">
+<meta property="article:author" content="easy">
+<meta property="article:tag" content="AGENT">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+
+
+<title >我们如何构建多智能体研究系统</title>
+
+<!-- Favicon -->
+
+    <link href='/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png?v=2.2.7' rel='icon' type='image/png' sizes='16x16' ></link>
+
+
+    <link href='/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png?v=2.2.7' rel='icon' type='image/png' sizes='32x32' ></link>
+
+
+
+    <link href='/site.webmanifest' rel='manifest' ></link>
+
+
+<!-- Plugin -->
+
+
+
+
+    
+<link rel="stylesheet" href="https://unpkg.com/hexo-theme-async@2.2.7/source/css/plugins/bootstrap.row.css">
+
+    
+<link rel="stylesheet" href="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.css">
+
+    
+    
+
+
+
+
+<!-- Icon -->
+
+    
+<link rel="stylesheet" href="/css/plugins/font-awesome.min.css">
+
+
+
+
+<!-- Variable -->
+<script>window.ASYNC_CONFIG = {"hostname":"example.com","author":"easy","root":"/","typed_text":null,"theme_version":"2.2.7","theme":{"switch":true,"default":"auto","animation":true},"favicon":{"logo":"/img/编程兔子_compressed.png","icon16":"/img/编程兔子_compressed.png","icon32":"/img/编程兔子_compressed.png","apple_touch_icon":null,"webmanifest":"/site.webmanifest","visibilitychange":true,"hidden":"failure.ico","show_text":"(/≧▽≦/)咦！又好了！","hide_text":"(●—●)喔哟，崩溃啦！"},"i18n":{"placeholder":"搜索文章...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）","author":"本文作者：","copyright_link":"本文链接：","copyright_license_title":"版权声明：","copyright_license_content":"本博客所有文章除特别声明外，均默认采用 undefined 许可协议。","copy_success":"复制成功","copy_failure":"复制失败","open_read_mode":"进入阅读模式","exit_read_mode":"退出阅读模式","notice_outdate_message":"距离上次更新已经 undefined 天了, 文章内容可能已经过时。","sticky":"置顶","just":"刚刚","min":"分钟前","hour":"小时前","day":"天前","month":"个月前"},"swup":false,"plugin":{"flickr_justified_gallery":"https://unpkg.com/flickr-justified-gallery@latest/dist/fjGallery.min.js"},"icons":{"sun":"far fa-sun","moon":"far fa-moon","play":"fas fa-play","email":"far fa-envelope","next":"fas fa-arrow-right","calendar":"far fa-calendar-alt","clock":"far fa-clock","user":"far fa-user","back_top":"fas fa-arrow-up","close":"fas fa-times","search":"fas fa-search","reward":"fas fa-hand-holding-usd","toc_tag":"fas fa-th-list","read":"fas fa-book-reader","arrows":"fas fa-arrows-alt-h","double_arrows":"fas fa-angle-double-down","copy":"fas fa-copy"},"icontype":"font","highlight":{"plugin":"highlighjs","theme":true,"copy":true,"lang":true,"title":"default","height_limit":false},"toc":{"post_title":true},"live_time":{"start_time":"","prefix":"博客已萌萌哒运行 undefined 天"},"danmu":{"enable":false,"el":".trm-banner"},"creative_commons":{"license":"by-nc-sa","language":"deed.zh-hans"},"search":{"enable":true,"type":"local","href":"https://www.google.com/search?q=site:","domain":null}};</script>
+<script id="async-page-config">window.PAGE_CONFIG = {"isPost":true,"isHome":false,"postUpdate":"2026-03-06 16:40:50"};</script>
+
+<!-- Theme mode css -->
+<link data-swup-theme rel="stylesheet" href="/css/index.css?v=2.2.7" id="trm-switch-style">
+<script>
+    let defaultMode = ASYNC_CONFIG.theme.default !=='auto' ?  ASYNC_CONFIG.theme.default : (window.matchMedia("(prefers-color-scheme: light)").matches ? 'style-light' : 'style-dark')
+    let catchMode = localStorage.getItem('theme-mode') || defaultMode;
+    let type = catchMode === 'style-dark' ? 'add' : 'remove';
+    document.documentElement.classList[type]('dark')
+</script>
+
+<!-- CDN -->
+
+
+    
+    
+
+
+
+<!-- Site Analytics -->
+
+ 
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+  <!-- app wrapper -->
+  <div class="trm-app-frame">
+
+    <!-- page preloader -->
+    <div class="trm-preloader">
+    <div class="trm-holder">
+        <div class="preloader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+    <!-- page preloader end -->
+
+    <!-- change mode preloader -->
+    <div class="trm-mode-swich-animation-frame">
+    <div class="trm-mode-swich-animation">
+        <i class="i-sun"><i class="iconfont far fa-sun"></i></i>
+        <div class="trm-horizon"></div>
+        <i class="i-moon"><i class="iconfont far fa-moon"></i></i>
+    </div>
+</div>
+    <!-- change mode preloader end -->
+
+      <!-- scroll container -->
+      <div id="trm-dynamic-content" class="trm-swup-animation">
+        <div id="trm-scroll-container" class="trm-scroll-container" style="opacity: 0">
+            <!-- top bar -->
+            <header class="trm-top-bar">
+	<div class="container">
+		<div class="trm-left-side">
+			<!-- logo -->
+<a href="/" class="trm-logo-frame trm-anima-link">
+    
+        <img alt="logo" src="/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png">
+    
+    
+        <div class="trm-logo-text">
+            Easy-Box<span></span>
+        </div>
+    
+</a>
+<!-- logo end -->
+		</div>
+		<div class="trm-right-side">
+			<!-- menu -->
+<div class="trm-menu">
+    <nav>
+        <ul>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/" target="">
+                    首页
+                </a>
+                
+            </li>
+            
+            <li class="menu-item-has-children ">
+                <a  href="/archives/" target="">
+                    归档
+                </a>
+                
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+<!-- menu end -->
+			
+    <!-- mode switcher place -->
+    <div class="trm-mode-switcher-place">
+        <div class="trm-mode-switcher">
+            <i class="iconfont far fa-sun"></i>
+            <input class="tgl tgl-light" id="trm-swich" type="checkbox">
+            <label class="trm-swich" for="trm-swich"></label>
+            <i class="iconfont far fa-moon"></i>
+        </div>
+    </div>
+    <!-- mode switcher place end -->
+
+			
+    
+    <div id="trm-search-btn" class="trm-search-btn">
+        <i class="iconfont fas fa-search"></i>
+    </div>
+     
+
+		</div>
+		<div class="trm-menu-btn">
+			<span></span>
+		</div>
+	</div>
+</header>
+            <!-- top bar end -->
+
+            <!-- body -->
+            
+<div class="trm-content-start">
+    <!-- banner -->
+    <div class="trm-banner">
+    
+    <!-- banner cover -->
+    <img style="object-position:top;object-fit:cover;" alt="banner" class="trm-banner-cover" src="/img/banner.png">
+    <!-- banner cover end -->
+    
+
+    <!-- banner content -->
+    <div class="trm-banner-content trm-overlay">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-4"></div>
+                
+                <div class="col-lg-8">
+
+                    <!-- banner title -->
+                    <div class="trm-banner-text ">
+                        <div class="trm-label trm-mb-20">
+                            NEWS LETTER
+                        </div>
+                        <h1 class="trm-mb-30 trm-hsmb-font">
+                            我们如何构建多智能体研究系统
+                        </h1>
+
+                        
+                            <ul class="trm-breadcrumbs trm-label">
+                                <li>
+                                    <a href="/" class="trm-anima-link">Home</a>
+                                </li>
+                                <li>
+                                    <span>
+                                        2026
+                                    </span>
+                                </li>
+                            </ul>
+                        
+                    </div>
+                    <!-- banner title end -->
+
+                    <!-- scroll hint -->
+                    <span id="scroll-triger" class="trm-scroll-hint-frame">
+                        <div class="trm-scroll-hint"></div>
+                        <span class="trm-label">Scroll down</span>
+                    </span>
+                    <!-- scroll hint end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- banner content end -->
+</div>
+    <!-- banner end -->
+    <div class="container">
+        <div class="row">
+            
+                <div class="trm-page-sidebar col-lg-4 hidden-sm">
+                    <!-- main card -->
+                    <div class="trm-main-card-frame trm-sidebar">
+    <div class="trm-main-card"> 
+        <!-- card header -->
+<div class="trm-mc-header">
+    <div class="trm-avatar-frame trm-mb-20">
+        <img alt="Avatar" class="trm-avatar" src="/img/%E7%BC%96%E7%A8%8B%E5%85%94%E5%AD%90_compressed.png">
+    </div>
+    <h5 class="trm-name trm-mb-15">
+        EASY
+    </h5>
+    
+</div>
+<!-- card header end -->
+        <!-- sidebar social -->
+
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<div class="trm-social">
+    
+        <a href="https://github.com" title="Github" rel="nofollow" target="_blank">
+            <i class="iconfont fab fa-github"></i>
+        </a>
+    
+</div>
+
+<!-- sidebar social end -->
+        <!-- info -->
+<div class="trm-divider trm-mb-40 trm-mt-40"></div>
+<ul class="trm-table trm-mb-20">
+    
+        <li>
+            <div class="trm-label">
+                Residence:
+            </div>
+            <div class="trm-label trm-label-light">
+                Mars
+            </div>
+        </li>
+    
+</ul>
+<!-- info end -->
+
+        
+    <div class="trm-divider trm-mb-40 trm-mt-40"></div>
+    <!-- action button -->
+    <div class="text-center">
+        <a href="mailto:easy2022163@163.com" class="trm-btn">
+            联系我
+            <i class="iconfont far fa-envelope"></i>
+        </a>
+    </div>
+    <!-- action button end -->
+
+    </div>
+</div>
+                    <!-- main card end -->
+                </div>
+            
+            <div class="trm-page-content col-lg-8">
+                <div id="trm-content" class="trm-content">
+                    <div class="trm-post-info row hidden-sm">
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-calendar-alt trm-icon"></i><br>
+            01/06
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-clock trm-icon"></i><br>
+            17:10
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div id="post-author" class="trm-card trm-label trm-label-light text-center">
+            <i class="iconfont far fa-user trm-icon"></i><br>
+            easy
+        </div>
+    </div>
+</div>
+<div class="trm-card ">
+    <article id="article-container" class="trm-publication">
+    <p><strong>英文标题</strong>: How we built our multi-agent research system</p>
+<p><strong>原文链接</strong>: <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/multi-agent-research-system">https://www.anthropic.com/engineering/multi-agent-research-system</a></p>
+<p>Claude现在具有<strong>研究功能</strong>，允许它跨网络、Google Workspace和任何集成进行搜索，以完成复杂任务。</p>
+<p>这个多智能体系统从原型到生产的旅程教会了我们关于系统架构、工具设计和提示工程的关键经验。多智能体系统由多个智能体（在循环中自主使用工具的LLM）协同工作组成。我们的研究功能涉及一个基于用户查询规划研究过程的智能体，然后使用工具创建并行智能体同时搜索信息。具有多个智能体的系统在智能体协调、评估和可靠性方面引入了新的挑战。</p>
+<p>这篇文章分解了对我们有效的原则——我们希望你会发现它们对构建自己的多智能体系统时有用。</p>
+<h2 id="多智能体系统的好处"><a href="#多智能体系统的好处" class="headerlink" title="多智能体系统的好处"></a>多智能体系统的好处</h2><p>研究工作涉及开放式问题，很难提前预测所需步骤。你不能为探索复杂主题硬编码固定路径，因为过程本质上是动态的和路径依赖的。当人们进行研究时，他们倾向于根据发现持续更新方法，跟随调查过程中出现的线索。</p>
+<p>这种不可预测性使AI智能体特别适合研究任务。研究需要灵活性，在调查展开时转向或探索切线连接。模型必须自主运行多轮，根据中间发现决定追求哪些方向。线性的一次性管道无法处理这些任务。</p>
+<p>搜索的本质是压缩：从庞大的语料库中提取见解。子智能体通过在自己的上下文窗口中并行运行来促进压缩，同时探索问题的不同方面，然后为领先的研究智能体压缩最重要的标记。每个子智能体还提供关注点分离——不同的工具、提示和上下文窗口允许每个子智能体专门化。</p>
+<h2 id="关键设计原则"><a href="#关键设计原则" class="headerlink" title="关键设计原则"></a>关键设计原则</h2><h3 id="1-关注点分离"><a href="#1-关注点分离" class="headerlink" title="1. 关注点分离"></a>1. 关注点分离</h3><p>每个智能体应该有明确的职责：</p>
+<ul>
+<li><strong>研究规划器</strong>：将查询分解为子任务</li>
+<li><strong>搜索智能体</strong>：执行特定搜索</li>
+<li><strong>综合智能体</strong>：合并和总结结果</li>
+<li><strong>质量控制智能体</strong>：验证和事实检查</li>
+</ul>
+<h3 id="2-并行化"><a href="#2-并行化" class="headerlink" title="2. 并行化"></a>2. 并行化</h3><p>同时运行多个智能体以提高效率：</p>
+<ul>
+<li>为独立子任务创建并行智能体</li>
+<li>使用协调器管理依赖关系</li>
+<li>聚合结果进行综合</li>
+</ul>
+<h3 id="3-上下文管理"><a href="#3-上下文管理" class="headerlink" title="3. 上下文管理"></a>3. 上下文管理</h3><p>仔细管理每个智能体的上下文：</p>
+<ul>
+<li>为每个智能体提供相关上下文</li>
+<li>避免上下文污染</li>
+<li>在智能体之间传递关键信息</li>
+</ul>
+<h3 id="4-错误处理"><a href="#4-错误处理" class="headerlink" title="4. 错误处理"></a>4. 错误处理</h3><p>为失败建立强大的恢复机制：</p>
+<ul>
+<li>检测和重试失败的智能体</li>
+<li>优雅地降级功能</li>
+<li>向用户传达问题</li>
+</ul>
+<h2 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h2><h3 id="高层流程"><a href="#高层流程" class="headerlink" title="高层流程"></a>高层流程</h3><ol>
+<li><strong>查询分析</strong>：理解用户请求</li>
+<li><strong>任务分解</strong>：将查询分解为子任务</li>
+<li><strong>并行执行</strong>：为每个子任务启动智能体</li>
+<li><strong>结果聚合</strong>：收集和综合发现</li>
+<li><strong>响应生成</strong>：创建最终答案</li>
+</ol>
+<h3 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h3><h4 id="协调器"><a href="#协调器" class="headerlink" title="协调器"></a>协调器</h4><p>协调器是管理整个研究过程的中央智能体：</p>
+<ul>
+<li>分析用户查询</li>
+<li>创建研究计划</li>
+<li>启动子智能体</li>
+<li>监控进度</li>
+<li>综合结果</li>
+</ul>
+<h4 id="子智能体"><a href="#子智能体" class="headerlink" title="子智能体"></a>子智能体</h4><p>子智能体执行特定研究任务：</p>
+<ul>
+<li>网络搜索</li>
+<li>文档检索</li>
+<li>数据分析</li>
+<li>事实验证</li>
+</ul>
+<h4 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h4><p>工具为智能体提供能力：</p>
+<ul>
+<li>搜索API</li>
+<li>文档处理器</li>
+<li>数据提取器</li>
+<li>验证服务</li>
+</ul>
+<h2 id="实施经验"><a href="#实施经验" class="headerlink" title="实施经验"></a>实施经验</h2><h3 id="提示工程很重要"><a href="#提示工程很重要" class="headerlink" title="提示工程很重要"></a>提示工程很重要</h3><p>我们发现提示质量对系统性能有巨大影响：</p>
+<ul>
+<li>清晰定义每个智能体的角色</li>
+<li>提供具体示例</li>
+<li>建立明确的边界</li>
+<li>使用一致的术语</li>
+</ul>
+<h3 id="评估具有挑战性"><a href="#评估具有挑战性" class="headerlink" title="评估具有挑战性"></a>评估具有挑战性</h3><p>多智能体系统更难评估：</p>
+<ul>
+<li>需要端到端测试</li>
+<li>跟踪跨智能体的决策</li>
+<li>测量整体质量</li>
+<li>监控性能回归</li>
+</ul>
+<h3 id="可观察性至关重要"><a href="#可观察性至关重要" class="headerlink" title="可观察性至关重要"></a>可观察性至关重要</h3><p>了解系统中发生的事情：</p>
+<ul>
+<li>记录所有智能体交互</li>
+<li>跟踪工具使用</li>
+<li>监控上下文使用</li>
+<li>可视化执行流程</li>
+</ul>
+<h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><h3 id="1-从简单开始"><a href="#1-从简单开始" class="headerlink" title="1. 从简单开始"></a>1. 从简单开始</h3><p>不要过度设计你的初始系统：</p>
+<ul>
+<li>从少量智能体开始</li>
+<li>使用简单的协调逻辑</li>
+<li>逐步添加复杂性</li>
+</ul>
+<h3 id="2-设计清晰的接口"><a href="#2-设计清晰的接口" class="headerlink" title="2. 设计清晰的接口"></a>2. 设计清晰的接口</h3><p>智能体之间的通信应该明确：</p>
+<ul>
+<li>定义输入&#x2F;输出格式</li>
+<li>建立错误协议</li>
+<li>记录预期行为</li>
+</ul>
+<h3 id="3-优雅地处理失败"><a href="#3-优雅地处理失败" class="headerlink" title="3. 优雅地处理失败"></a>3. 优雅地处理失败</h3><p>事情会出错——为此做好准备：</p>
+<ul>
+<li>实现超时</li>
+<li>提供回退机制</li>
+<li>向用户传达问题</li>
+</ul>
+<h3 id="4-优化性能"><a href="#4-优化性能" class="headerlink" title="4. 优化性能"></a>4. 优化性能</h3><p>多智能体系统可能很慢：</p>
+<ul>
+<li>并行化独立任务</li>
+<li>缓存结果</li>
+<li>使用高效的工具</li>
+<li>监控延迟</li>
+</ul>
+<h2 id="学到的教训"><a href="#学到的教训" class="headerlink" title="学到的教训"></a>学到的教训</h2><h3 id="协调很难"><a href="#协调很难" class="headerlink" title="协调很难"></a>协调很难</h3><p>让多个智能体协同工作需要仔细设计：</p>
+<ul>
+<li>避免死锁</li>
+<li>管理共享资源</li>
+<li>处理竞争条件</li>
+</ul>
+<h3 id="上下文管理很关键"><a href="#上下文管理很关键" class="headerlink" title="上下文管理很关键"></a>上下文管理很关键</h3><p>每个智能体需要正确的上下文：</p>
+<ul>
+<li>太多上下文 &#x3D; 混乱</li>
+<li>太少上下文 &#x3D; 错误</li>
+<li>找到正确的平衡</li>
+</ul>
+<h3 id="评估需要新工具"><a href="#评估需要新工具" class="headerlink" title="评估需要新工具"></a>评估需要新工具</h3><p>传统评估不适用于多智能体系统：</p>
+<ul>
+<li>创建端到端测试</li>
+<li>测量系统级指标</li>
+<li>使用人工评估</li>
+</ul>
+<h2 id="未来方向"><a href="#未来方向" class="headerlink" title="未来方向"></a>未来方向</h2><p>我们计划继续改进我们的多智能体研究系统：</p>
+<ul>
+<li>更好的协调算法</li>
+<li>更智能的任务分解</li>
+<li>改进的上下文管理</li>
+<li>更强大的错误恢复</li>
+</ul>
+<hr>
+<p><em>原文发布于 Anthropic Engineering Blog</em></p>
+<p><em>原文链接: <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/multi-agent-research-system">https://www.anthropic.com/engineering/multi-agent-research-system</a></em></p>
+
+</article>
+    
+    
+
+</div>
+<div class="trm-post-next-prev row">
+    <div class="col-lg-12">
+        <!-- title -->
+        <h5 class="trm-title-with-divider">
+            其他文章
+            <span data-number="02"></span>
+        </h5>
+    </div>
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
+            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/06/18_%E4%B8%8A%E4%B8%8B%E6%96%87%E6%A3%80%E7%B4%A2%E6%8A%80%E6%9C%AF%E4%BB%8B%E7%BB%8D/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">上下文检索技术介绍</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/06</li>
+                <li>17:10</li>
+                <li>文章转载</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+    
+        <div class="col-lg-6">
+    <div class="trm-older-publications-card trm-scroll-animation trm-active-el">
+        <div class="trm-older-publication">
+            
+            <a class="trm-op-top trm-anima-link" href="/2026/01/06/cool-quick/">
+                <span class="trm-op-cover">
+                    <img alt="cover" class="no-fancybox" src="/img/block.jpg">
+                </span>
+                <h6 class="trm-op-title">从复制到留存：CoolQuick 用 Tauri 打造零摩擦的智能剪贴板管理工具</h6>
+            </a>
+            <div class="trm-divider trm-mb-15 trm-mt-20"></div>
+            <ul class="trm-card-data trm-label">
+                <li>26/01/06</li>
+                <li>17:10</li>
+                <li>工程实践</li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+</div>
+
+    
+
+
+
+                    <div class="trm-divider footer-divider"></div>
+
+                    <!-- footer -->
+                    <footer class="trm-footer-card trm-scroll-animation">
+
+    
+
+    
+
+    
+        <div class="trm-footer-item">
+            <span>
+                由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v8.1.1
+            </span>
+            <span class="footer-separator" data-separator=" | "></span>
+            <span> 
+                主题 - 
+                <a rel="noopener" href='https://github.com/MaLuns/hexo-theme-async' target='_blank'>Async</a>
+                v2.2.7
+            </span>
+        </div>
+      
+
+     
+
+     
+</footer>
+                    <!-- footer end -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- body end -->
+
+            
+
+            
+<div class="trm-fixed-container">
+    
+    
+        <div class="trm-fixed-btn" data-title="阅读模式" onclick="asyncFun.switchReadMode()">
+            <i class="iconfont fas fa-book-reader"></i>
+        </div>
+    
+    
+    <div id="trm-back-top" class="trm-fixed-btn" data-title="回到顶部">
+        <i class="iconfont fas fa-arrow-up"></i>
+    </div>
+</div>
+        </div>
+      </div>
+      <!-- scroll container end -->
+  </div>
+  <!-- app wrapper end -->
+
+  
+    <div class="trm-search-popup">
+        <div class="trm-search-wrapper">
+            <div class="form trm-search-form">
+                <div class="trm-search-input-icon">
+                    <i class="iconfont fas fa-search"></i>
+                </div>
+                <input class="trm-search-input" type="text" placeholder="搜索文章...">
+                <div class="trm-search-btn-close">
+                    <i class="iconfont fas fa-times"></i>
+                </div>
+            </div>
+            <div class="trm-search-result-container">
+                <div class="trm-search-empty">
+                    请输入关键词进行搜索
+                </div>
+            </div>
+            <div class="trm-search-footer">
+                <div class="trm-search-stats"></div>
+                <ul class="trm-search-commands">
+                    <li>
+                        <kbd class="command-palette-commands-key">
+                            <svg width="15" height="15" aria-label="Escape key" role="img">
+                                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="1.2">
+                                    <path
+                                        d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956">
+                                    </path>
+                                </g>
+                            </svg>
+                        </kbd>
+                        <span class="command-palette-Label">to close</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+  <!-- Plugin -->
+
+
+
+
+    
+    
+<script src="https://unpkg.com/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
+
+    
+
+    
+
+    
+        
+<script src="https://unpkg.com/hexo-generator-searchdb@1.4.0/dist/search.js"></script>
+
+        <script src="https://unpkg.com/hexo-theme-async@2.2.7/source/js/plugins/local_search.js?v=2.2.7"></script>
+    
+
+    <!-- 数学公式 -->
+    
+
+    <!-- 评论插件 -->
+    
+        
+
+        
+    
+
+		
+
+
+
+
+    <!-- Service Worker -->
+    
+    <!-- baidu push -->
+    
+
+
+<script id="async-script" src="https://unpkg.com/hexo-theme-async@2.2.7/source/js/main.js?v=2.2.7"></script>
+
+<!-- CDN -->
+
+
+    
+
+    
+
+    
+
+
+
+</body>
+
+</html>
